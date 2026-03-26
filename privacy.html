@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Privacy Policy - CricLive24</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: black;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* animated background */
+    body::before {
+      content: "";
+      position: fixed;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, #00f2fe22, transparent 40%),
+                  radial-gradient(circle, #4facfe22, transparent 40%);
+      animation: moveBg 10s linear infinite;
+    }
+
+    @keyframes moveBg {
+      0% { transform: translate(0,0); }
+      50% { transform: translate(-20%, -20%); }
+      100% { transform: translate(0,0); }
+    }
+
+    .container {
+      position: relative;
+      max-width: 900px;
+      margin: 80px auto;
+      padding: 40px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 25px;
+      background: linear-gradient(90deg, #00f2fe, #4facfe, #00f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glowText 3s infinite alternate;
+    }
+
+    @keyframes glowText {
+      from { text-shadow: 0 0 10px #00f2fe; }
+      to { text-shadow: 0 0 25px #4facfe; }
+    }
+
+    p {
+      line-height: 1.8;
+      font-size: 16px;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+
+    .highlight {
+      color: #00f2fe;
+      font-weight: bold;
+    }
+
+    .line {
+      height: 2px;
+      margin: 25px 0;
+      background: linear-gradient(to right, transparent, #00f2fe, transparent);
+      animation: glowLine 2s infinite alternate;
+    }
+
+    @keyframes glowLine {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #aaa;
+      margin: 0 15px;
+      font-size: 15px;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .footer a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 0%;
+      height: 2px;
+      background: #00f2fe;
+      transition: 0.3s;
+    }
+
+    .footer a:hover {
+      color: #00f2fe;
+      text-shadow: 0 0 10px #00f2fe;
+    }
+
+    .footer a:hover::after {
+      width: 100%;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Privacy Policy</h1>
+
+    <div class="line"></div>
+
+    <p>At <span class="highlight">CricLive24</span>, your privacy is important to us. We do not collect any personal information without your consent.</p>
+
+    <p>We may use cookies to improve user experience. Third-party vendors like <span class="highlight">Google</span> may use cookies to display ads based on your previous visits.</p>
+
+    <p>You can control or disable personalized ads anytime via <span class="highlight">Google Ads Settings</span>.</p>
+
+    <p>We are not responsible for privacy practices of external websites or third-party services.</p>
+
+    <div class="line"></div>
+
+    <div class="footer">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CricLive24</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#f1f3f6,#e2e8f0);
+padding-bottom:60px; 
+}
+.bottomNav{
+  position:fixed;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 5px;
+
+  /* 🔥 এইটা replace কর */
+  background: rgba(20,30,40,0.8);
+  backdrop-filter: blur(10px);
+
+  border-radius:20px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3),
+             inset 0 0 10px rgba(255,255,255,0.05);
+
+  z-index:999;
+}
+.navItem{
+  color:#cfd8dc;
+  text-align:center;
+  font-size:20px; /* 🔥 এইটা */
+  cursor:pointer;
+  transition:0.3s;
+  position:relative;
+}
+
+.navItem span{
+  display:block;
+  font-size:11px;
+  margin-top:3px;
+  opacity:0.8;
+}
+
+.navItem.active{
+  color:#00e5ff;
+  transform:translateY(-6px) scale(1.1);
+  text-shadow:0 0 10px #00e5ff, 0 0 20px #00e5ff;
+}
+.navItem:active{
+  transform:scale(0.9);
+}
+
+/* 🔥 glowing dot */
+.navItem.active::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  width:6px;
+  height:6px;
+  background:#00e5ff;
+  border-radius:50%;
+  box-shadow:0 0 10px #00e5ff;
+}
+
+/* HEADER GLASS */
+.header{
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  padding:12px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:20px;
+  font-weight:bold;
+
+  position:sticky;
+  top:0;
+  z-index:1000;
+
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  text-shadow:0 0 10px rgba(255,255,255,0.6);
+} /* 👈 এইটা add কর (closing) */
+
+.nav{
+  display:flex;
+  gap:15px;
+}
+.nav span{
+  cursor:pointer;
+  font-size:14px;
+  opacity:0.8;
+  padding:5px 10px;
+  border-radius:10px;
+
+  transition:0.3s ease; /* 👈 এইটা add কর */
+}
+.nav span:hover{
+  background:rgba(255,255,255,0.1);
+  color:#00c9a7;
+  opacity:1;
+}
+
+.nav span.active{
+  color:#00c9a7;
+  font-weight:bold;
+}
+
+
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  text-shadow:0 0 10px rgba(255,255,255,0.6);
+}
+
+/* glow animation */
+.header::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.15),transparent 60%);
+  animation:headerGlow 6s linear infinite;
+}
+
+@keyframes headerGlow{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(50%,50%)}
+}
+/* CATEGORY */
+.categoryBar{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:10px;
+  background:white;
+}
+
+.catBtn{
+  padding:6px 14px;
+  background:#eee;
+  border-radius:20px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.catBtn:hover{
+  background:#009270;
+  color:white;
+  transform:scale(1.1);
+}
+
+.catBtn.active{
+  background:#009270;
+  color:white;
+}
+
+/* MATCH */
+.matchSlider{
+  display:flex;
+  gap:20px;
+  overflow-x:auto;
+  padding:15px;
+background:#e9eef5;
+  border-radius:20px;
+}
+
+.matchCard{
+  min-width:260px;
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;
+  padding:15px;
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.1);
+  transition:0.4s;
+  position:relative;
+  overflow:hidden;
+}
+
+/* glow light */
+.matchCard::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.12),transparent 60%);
+  animation:cardGlow 6s linear infinite;
+}
+
+/* hover cinematic */
+.matchCard:hover{
+  transform:translateY(-10px) scale(1.03);
+  box-shadow:0 20px 50px rgba(0,0,0,0.6);
+}
+
+/* animation */
+@keyframes cardGlow{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(50%,50%)}
+}
+.series{font-size:12px;color:#666;}
+.status{margin-top:8px;font-size:13px;}
+
+@keyframes blink{
+  0%{opacity:1;}
+  50%{opacity:0.3;}
+  100%{opacity:1;}
+}
+.live{
+  color:#ff4d4d;
+  font-weight:bold;
+  text-shadow:0 0 10px rgba(255,0,0,0.8);
+}
+
+.live::before{
+  content:"";
+  display:inline-block;
+  width:8px;
+  height:8px;
+  background:red;
+  border-radius:50%;
+  margin-right:5px;
+  animation:blink 1s infinite;
+}
+
+.upcoming{color:orange;font-weight:bold}
+.finished{color:gray;font-weight:bold}
+
+/* UPDATED SCORE UI */
+.score{font-weight:bold;margin-top:6px}
+.score2{font-size:13px;color:#555}
+
+/* NEWS */
+.newsCard{
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+  transition:0.3s;
+overflow:hidden;
+}
+
+.newsCard:hover{
+  transform:translateY(-5px);
+}
+
+/* VIDEO */
+
+/* POINT TABLE */
+.tableBox{
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+#pointsTable .tableBox{
+  background:linear-gradient(135deg,#ffffff,#e6f0ff);
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.2);
+  overflow:hidden;
+}
+
+.tableRow{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  border-bottom:1px solid #eee;
+}
+#pointsTable .tableRow{
+  transition:0.3s;
+}
+
+#pointsTable .tableRow:hover{
+  background:rgba(0,146,112,0.1);
+  transform:scale(1.02);
+}
+
+.tableRow:hover{
+  background:#f9fafb;
+}
+.tableHeader{
+  background:linear-gradient(90deg,#009270,#00c9a7);
+  color:#fff;
+  font-weight:bold;
+  text-shadow:0 0 10px rgba(255,255,255,0.5);
+}
+/* ADS */
+.adBox{
+  background:linear-gradient(135deg,#dfe6ee,#cfd8e3); /* changed */
+  color:#222; /* changed */
+
+  backdrop-filter:blur(12px);
+  border-radius:18px;
+  height:120px;
+  margin:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  letter-spacing:1px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 15px 40px rgba(0,0,0,0.4);
+
+  /* optional */
+  text-shadow:none;
+}
+
+/* glow animation */
+.adBox::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.15),transparent 60%);
+  animation:adGlow 6s linear infinite;
+}
+
+@keyframes adGlow{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(50%,50%)}
+}
+
+/* IMAGE */
+img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-top:10px;
+}
+.newsCard img{
+  width:100%;
+  height:auto;
+  object-fit:contain;
+}
+/* MOBILE */
+@media(max-width:600px){
+  .matchCard{min-width:220px;}
+  .header{font-size:18px;}
+  .tableRow{font-size:12px;}
+}
+
+.hero{
+background: linear-gradient(135deg,#000428,#004e92);
+color:#fff;
+padding:35px 20px;
+border-radius:15px;
+margin:10px;
+text-align:center;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+transform:scale(1);
+transition:0.3s;
+}
+.hero:hover{
+transform:scale(1.02);
+}
+
+
+/* glow effect */
+.hero::before{
+content:"";
+position:absolute;
+top:-50%;
+left:-50%;
+width:200%;
+height:200%;
+background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
+animation: glowMove 6s linear infinite;
+}
+
+/* text animation */
+.hero h2{
+margin:0;
+font-size:24px;
+letter-spacing:1px;
+animation: fadeUp 1s ease;
+text-shadow:0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
+}
+
+.hero p{
+margin-top:8px;
+font-size:14px;
+opacity:0.9;
+animation: fadeUp 1.5s ease;
+}
+
+/* animations */
+@keyframes glowMove{
+0%{transform:translate(0,0)}
+100%{transform:translate(50%,50%)}
+}
+
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(20px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+/* 🟢 POINT TABLE CINEMATIC */
+#pointsTable .tableBox{
+  background: linear-gradient(135deg,#ffffff,#f1f5f9);
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+#pointsTable .tableHeader{
+  background: linear-gradient(90deg,#009270,#00c9a7);
+  color:white;
+  padding:10px;
+  border-radius:10px;
+}
+
+#pointsTable .tableRow{
+  transition:0.3s;
+}
+
+#pointsTable .tableRow:hover{
+  background:rgba(0,146,112,0.08);
+  transform:scale(1.02);
+}
+
+/* 🥇🥈🥉 */
+#pointsTable .tableRow:nth-child(2){ background:#d4f8e8; font-weight:bold; }
+#pointsTable .tableRow:nth-child(3){ background:#e8f4ff; }
+#pointsTable .tableRow:nth-child(4){ background:#fff4e6; }
+
+h3{
+  position:relative;
+  padding:15px 20px;
+  margin-top:25px;
+  color:#0f172a;
+  font-size:18px;
+  letter-spacing:1px;
+  font-weight:bold;
+  text-shadow:none;
+}
+
+/* left glow bar */
+h3::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:5px;
+  height:60%;
+  background:linear-gradient(180deg,#00c9a7,#009270);
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,201,167,0.8);
+}
+
+/* subtle bottom glow */
+h3::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:2px;
+  background:linear-gradient(90deg,#00c9a7,transparent);
+  opacity:0.6;
+}
+
+#topAd, #bottomAd{
+  height:100px;
+  border-radius:15px;
+}
+#topAd img, #bottomAd img{
+  height:100%;
+  object-fit:cover;
+  border-radius:15px;
+}
+
+/* 🎬 VIDEO GRID - ULTRA PRO */
+#videoList{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+  padding:15px;
+}
+
+/* CARD */
+.videoCard{
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+  transition:0.4s;
+  position:relative;
+}
+
+/* HOVER EFFECT */
+.videoCard:hover{
+  transform:translateY(-10px) scale(1.02);
+  box-shadow:0 20px 50px rgba(0,0,0,0.25);
+}
+
+/* VIDEO */
+.videoCard iframe{
+  width:100%;
+  height:180px;
+  border:none;
+
+  /* 🔥 add this */
+  transition:0.4s;
+}
+
+.videoCard:hover iframe{
+  transform:scale(1.05);
+}
+
+/* TITLE */
+.videoCard p{
+  margin:0;
+  padding:10px;
+  font-size:14px;
+  color:#111;
+  font-weight:600;
+}
+/* 🔥 PLAY ICON OVERLAY */
+.videoCard::after{
+  content:"▶";
+  position:absolute;
+  top:50%; /* 🔥 change this */
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:40px;
+  color:white;
+  background:rgba(0,0,0,0.5);
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:0.3s;
+}
+
+/* SHOW ON HOVER */
+.videoCard:hover::after{
+  opacity:1;
+}
+
+/* SMOOTH */
+.videoCard iframe{
+  border-radius:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>🏏 CricLive24</div>
+
+  <div class="nav">
+    <span onclick="setActive(this);scrollToSection('hero')">Home</span>
+    <span onclick="scrollToSection('newsList')">News</span>
+    <span onclick="scrollToSection('videoList')">Videos</span>
+  </div>
+
+  <span style="font-size:13px;opacity:0.8;">Login</span>
+</div>
+<!-- ✅ HERO HERE -->
+<div class="hero" id="hero">
+<h2>🔥 Live Cricket Updates</h2>
+<p>Scores • News • Videos in one place</p>
+</div>
+
+<div class="categoryBar">
+
+  <div class="catBtn active" onclick="filterMatch('all'); setActive(this)">All</div>
+  <div class="catBtn" onclick="filterMatch('Live'); setActive(this)">Live</div>
+  <div class="catBtn" onclick="filterMatch('Upcoming'); setActive(this)">Upcoming</div>
+  <div class="catBtn" onclick="filterMatch('Finished'); setActive(this)">Finished</div>
+</div>
+
+<div class="matchSlider" id="liveMatchList">
+  <p style="padding:10px">Loading matches...</p>
+</div>
+
+<div class="adBox" id="topAd">Advertisement</div>
+
+<h3 style="padding:10px">📰 Latest News</h3>
+<div id="newsList">Loading...</div>
+
+<h3 style="padding:10px">📊 Points Table</h3>
+<div id="pointsTable">Loading...</div>
+<div class="adBox">Advertisement</div>
+<h3 style="padding:10px">🎬 Videos</h3>
+<div id="videoList"></div>
+
+<div class="adBox" id="bottomAd">Advertisement</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDFJd644ION6LvfWowXUIhXuaqKYRCvtKU",
+  authDomain: "criclive24-99787.firebaseapp.com",
+  databaseURL: "https://criclive24-99787-default-rtdb.firebaseio.com/",
+  projectId: "criclive24-99787",
+  storageBucket: "criclive24-99787.appspot.com",
+  messagingSenderId: "921452502761",
+  appId: "1:921452502761:web:8775d5308ec9c5deb65a78"
+};
+firebase.initializeApp(firebaseConfig);
+
+const firestore = firebase.firestore();
+const db = firebase.database();
+
+/* TEAM */
+let teamData = {};
+firestore.collection("teams").onSnapshot(snapshot=>{
+  teamData = {};
+  snapshot.forEach(doc=>{
+    teamData[doc.id] = doc.data();
+  });
+});
+
+/* MATCH */
+let allMatches = [];
+firestore.collection("matches").onSnapshot(snapshot=>{
+  allMatches = [];
+  snapshot.forEach(doc=>{
+    allMatches.push(doc.data());
+  });
+  showMatches(allMatches);
+});
+function showMatches(list){
+
+let html = "";
+
+if(list.length === 0){
+  document.getElementById("liveMatchList").innerHTML =
+  "<p style='padding:10px'>No matches found</p>";
+  return;
+}
+
+list.forEach((d, index)=>{
+
+let t1 = teamData[d.team1] || {};
+let t2 = teamData[d.team2] || {};
+
+let statusClass = 
+  d.status=="Live" ? "live" :
+  d.status=="Upcoming" ? "upcoming" : "finished";
+
+html += `
+<div class="matchCard">
+
+<div class="series">
+  ${d.matchNo || "Match"} • ${d.venue || "Stadium"}
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:10px;">
+  <div style="text-align:center">
+    <img src="${t1.logo || 'https://via.placeholder.com/40'}" style="width:40px;height:40px">
+    <div>${d.team1}</div>
+  </div>
+
+  <div>vs</div>
+
+  <div style="text-align:center">
+    <img src="${t2.logo || 'https://via.placeholder.com/40'}" style="width:40px;height:40px">
+    <div>${d.team2}</div>
+  </div>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:10px;">
+  <div class="score">
+    ${d.innings1?.score ? d.innings1.score + " (" + d.innings1.overs + ")" : ""}
+  </div>
+
+  <div class="score">
+    ${d.innings2?.score ? d.innings2.score + " (" + d.innings2.overs + ")" : ""}
+  </div>
+</div>
+
+<!-- DATE TIME -->
+<div style="margin-top:10px;font-size:12px;color:#ccc;text-align:center;">
+  ${d.date || ""}
+</div>
+
+<div style="font-size:12px;color:#aaa;text-align:center;">
+  ${d.time || ""} ${d.gmt ? "/ " + d.gmt + " GMT" : ""}
+</div>
+
+<div class="status ${statusClass}">
+  🔴 ${d.status}
+</div>
+
+</div>
+`;
+
+if(index % 2 === 1){
+  html += `<div class="adBox">Advertisement</div>`;
+}
+
+});
+
+document.getElementById("liveMatchList").innerHTML = html;
+}
+
+/* FILTER */
+function filterMatch(type){
+if(type=="all"){
+  showMatches(allMatches);
+}else{
+  let filtered = allMatches.filter(m => m.status==type);
+  showMatches(filtered);
+}
+}
+
+/* ACTIVE */
+function setActive(btn){
+document.querySelectorAll(".catBtn").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+}
+
+/* NEWS */
+db.ref("news").on("value", snapshot=>{
+let data = snapshot.val();
+let html = "";
+
+if(data){
+Object.values(data).reverse().forEach((n,index)=>{
+html += `
+<div class="newsCard">
+<b>${n.title}</b><br>
+<small>${n.time}</small>
+${n.image ? `<img src="${n.image}">` : ""}
+</div>
+`;
+if(index % 3 === 2){
+  html += `<div class="adBox">Advertisement</div>`;
+}
+});
+}
+
+document.getElementById("newsList").innerHTML = html;
+});
+
+/* POINT TABLE */
+firestore.collection("points").onSnapshot(snapshot=>{
+let html = `
+<div class="tableBox">
+<div class="tableRow tableHeader">
+<div>Team</div>
+<div>P</div>
+<div>W</div>
+<div>L</div>
+<div>Pts</div>
+</div>
+`;
+snapshot.forEach((doc,index)=>{
+let d = doc.data();
+html += `
+<div class="tableRow">
+<div style="display:flex;align-items:center;gap:6px;">
+  <img src="${teamData[d.team]?.logo || 'https://via.placeholder.com/20'}"
+       style="width:20px;height:20px;border-radius:50%">
+       
+  ${index==0 ? "🥇 " : index==1 ? "🥈 " : index==2 ? "🥉 " : ""}
+  
+  ${d.team}
+</div>
+<div>${d.played}</div>
+<div>${d.win}</div>
+<div>${d.loss}</div>
+<div>${d.points}</div>
+</div>
+
+`;
+});
+
+html += `</div>`;
+document.getElementById("pointsTable").innerHTML = html;
+});
+
+/* VIDEO (UNCHANGED) */
+firestore.collection("videos").onSnapshot(snapshot=>{
+let html="";
+snapshot.forEach((doc,index)=>{
+let v = doc.data();
+html += `
+<div class="videoCard">
+${v.link}
+<p>${v.title}</p>
+</div>
+`;
+});
+document.getElementById("videoList").innerHTML = html;
+});
+
+/* ADS */
+firestore.collection("ads").doc("main").onSnapshot(doc=>{
+if(doc.exists){
+let d = doc.data();
+document.getElementById("topAd").innerHTML =
+`<a href="${d.link}"><img src="${d.image}" width="100%"></a>`;
+document.getElementById("bottomAd").innerHTML =
+`<a href="${d.link}"><img src="${d.image}" width="100%"></a>`;
+}
+});
+
+// 👇 এইখানে বসা (IMPORTANT)
+  function scrollToSection(id){
+    document.getElementById(id).scrollIntoView();
+  }
+function setActive(el){
+  document.querySelectorAll(".navItem").forEach(i=>i.classList.remove("active"));
+  el.classList.add("active");
+}
+
+
+</script>
+<div class="bottomNav">
+ <div class="navItem active" onclick="setActive(this);scrollToSection('hero')"> 🏠<span>Home</span></div>
+  <div class="navItem" onclick="scrollToSection('liveMatchList')">🏏<span>Matches</span></div>
+  <div class="navItem" onclick="scrollToSection('newsList')">📰<span>News</span></div>
+  <div class="navItem" onclick="scrollToSection('videoList')">🎬<span>Videos</span></div>
+</div>
+
+
+<div style="text-align:center;padding:15px;">
+  <a href="privacy.html">Privacy Policy</a> |
+  <a href="about.html">About Us</a> |
+  <a href="contact.html">Contact</a>
+</div>
+</body>
+</html>

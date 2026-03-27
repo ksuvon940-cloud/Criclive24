@@ -3,14 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <title>CricLive24</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  color:#111;
   background:linear-gradient(135deg,#f1f3f6,#e2e8f0);
-padding-bottom:60px; 
+  padding-bottom:60px; 
 }
+
 .bottomNav{
   position:fixed;
   bottom:12px;
@@ -42,7 +46,7 @@ padding-bottom:60px;
 
 .navItem span{
   display:block;
-  font-size:11px;
+  font-size:13px;
   margin-top:3px;
   opacity:0.8;
 }
@@ -94,15 +98,16 @@ padding-bottom:60px;
   display:flex;
   gap:15px;
 }
+
 .nav span{
   cursor:pointer;
-  font-size:14px;
-  opacity:0.8;
+  font-size:15px;
+  opacity:0.9;
   padding:5px 10px;
   border-radius:10px;
-
-  transition:0.3s ease; /* 👈 এইটা add কর */
+  transition:0.3s ease;
 }
+
 .nav span:hover{
   background:rgba(255,255,255,0.1);
   color:#00c9a7;
@@ -209,8 +214,16 @@ background:#e9eef5;
   0%{transform:translate(0,0)}
   100%{transform:translate(50%,50%)}
 }
-.series{font-size:12px;color:#666;}
-.status{margin-top:8px;font-size:13px;}
+
+.series{
+  font-size:14px;
+  color:#666;
+}
+
+.status{
+  margin-top:8px;
+  font-size:14px;
+}
 
 @keyframes blink{
   0%{opacity:1;}
@@ -238,8 +251,16 @@ background:#e9eef5;
 .finished{color:gray;font-weight:bold}
 
 /* UPDATED SCORE UI */
-.score{font-weight:bold;margin-top:6px}
-.score2{font-size:13px;color:#555}
+
+.score{
+  font-size:16px;
+  font-weight:600;
+  margin-top:6px;
+}
+.score2{
+  font-size:14px;
+  color:#666;
+}
 
 /* NEWS */
 .newsCard{
@@ -250,6 +271,11 @@ background:#e9eef5;
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
   transition:0.3s;
 overflow:hidden;
+}
+
+small{
+  font-size:13px;
+  color:#777;
 }
 
 .newsCard:hover{
@@ -354,8 +380,8 @@ img{
 @media(max-width:600px){
   .matchCard{min-width:220px;}
   .header{font-size:18px;}
-  .tableRow{font-size:12px;}
-}
+  .tableRow{font-size:14px;
+color:#666;}
 
 .hero{
 background: linear-gradient(135deg,#000428,#004e92);
@@ -449,8 +475,8 @@ h3{
   margin-top:25px;
   color:#0f172a;
   font-size:18px;
-  letter-spacing:1px;
-  font-weight:bold;
+  letter-spacing:0.5px;
+  font-weight:600;
   text-shadow:none;
 }
 
@@ -705,11 +731,11 @@ html += `
 </div>
 
 <!-- DATE TIME -->
-<div style="margin-top:10px;font-size:12px;color:#ccc;text-align:center;">
+
+<div style="margin-top:10px;font-size:14px;color:#666;text-align:center;">
   ${d.date || ""}
 </div>
-
-<div style="font-size:12px;color:#aaa;text-align:center;">
+<div style="font-size:14px;color:#666;text-align:center;">
   ${d.time || ""} ${d.gmt ? "/ " + d.gmt + " GMT" : ""}
 </div>
 
@@ -752,13 +778,15 @@ let html = "";
 
 if(data){
 Object.values(data).reverse().forEach((n,index)=>{
+
 html += `
 <div class="newsCard">
-<b>${n.title}</b><br>
+<b style="font-size:16px;line-height:1.4;">${n.title}</b><br>
 <small>${n.time}</small>
 ${n.image ? `<img src="${n.image}">` : ""}
 </div>
 `;
+
 if(index % 3 === 2){
   html += `<div class="adBox">Advertisement</div>`;
 }

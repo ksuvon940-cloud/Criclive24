@@ -8,13 +8,12 @@
 body{
   margin:0;
   font-family: 'Inter', Arial, sans-serif;
-  font-size:16px;
-  line-height:1.5;
+  font-size:15px;
+  line-height:1.4;
   color:#111;
   background:linear-gradient(135deg,#f1f3f6,#e2e8f0);
   padding-bottom:60px; 
 }
-
 .bottomNav{
   position:fixed;
   bottom:12px;
@@ -120,11 +119,7 @@ body{
 }
 
 
-  overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,0.5);
-  text-shadow:0 0 10px rgba(255,255,255,0.6);
-}
-
+  
 /* glow animation */
 .header::before{
   content:"";
@@ -257,6 +252,11 @@ background:#e9eef5;
   font-weight:600;
   margin-top:6px;
 }
+.matchCard div[style*="font-size:14px"]{
+  font-size:12px !important;
+  color:#777 !important;
+}
+
 .score2{
   font-size:14px;
   color:#666;
@@ -271,6 +271,11 @@ background:#e9eef5;
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
   transition:0.3s;
 overflow:hidden;
+}
+.newsTitle{
+  font-size:15px;
+  line-height:1.4;
+  font-weight:600;
 }
 
 small{
@@ -377,11 +382,15 @@ img{
   object-fit:contain;
 }
 /* MOBILE */
+
 @media(max-width:600px){
   .matchCard{min-width:220px;}
   .header{font-size:18px;}
-  .tableRow{font-size:14px;
-color:#666;}
+  .tableRow{
+    font-size:14px;
+    color:#666;
+  }
+}
 
 .hero{
 background: linear-gradient(135deg,#000428,#004e92);
@@ -595,6 +604,22 @@ h3::after{
 html{
   scroll-behavior:smooth;
 }
+/* 🔥 FINAL FONT BALANCE */
+
+.series{font-size:12.5px;}
+.status{font-size:12.5px;}
+
+.score{
+  font-size:17px;
+  font-weight:600;
+}
+
+.videoCard p{font-size:13px;}
+.tableRow{font-size:13px;}
+
+.nav span{font-size:14px;}
+.navItem span{font-size:12px;}
+
 
 </style>
 </head>
@@ -781,7 +806,7 @@ Object.values(data).reverse().forEach((n,index)=>{
 
 html += `
 <div class="newsCard">
-<b style="font-size:16px;line-height:1.4;">${n.title}</b><br>
+<b class="newsTitle">${n.title}</b><br>
 <small>${n.time}</small>
 ${n.image ? `<img src="${n.image}">` : ""}
 </div>

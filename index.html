@@ -633,6 +633,68 @@ html{
 
 }
 
+.countdownWrap{
+  margin:15px;
+  padding:18px;
+  border-radius:18px;
+
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+
+  box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+/* glow effect */
+.countdownWrap::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.15),transparent 60%);
+  animation:glowMove 6s linear infinite;
+}
+
+/* title */
+.countdownTitle{
+  font-size:14px;
+  opacity:0.8;
+  margin-bottom:8px;
+}
+
+/* teams */
+.countdownMatch{
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+
+/* time box */
+.countdownTime{
+  font-size:22px;
+  font-weight:bold;
+  color:#00e5ff;
+
+  text-shadow:0 0 10px #00e5ff,
+               0 0 20px #00e5ff;
+
+  animation:pulse 1.5s infinite;
+}
+
+/* pulse animation */
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
+
+
 </style>
 </head>
 
@@ -666,6 +728,8 @@ html{
 <div class="matchSlider" id="liveMatchList">
   <p style="padding:10px">Loading matches...</p>
 </div>
+
+<div id="countdownBox" class="countdownWrap"></div>
 
 <div class="adBox" id="topAd">Advertisement</div>
 
@@ -710,14 +774,41 @@ firestore.collection("teams").onSnapshot(snapshot=>{
 
 /* MATCH */
 let allMatches = [];
+let apiLoaded = false;
+
 firestore.collection("matches").onSnapshot(snapshot=>{
   allMatches = [];
   snapshot.forEach(doc=>{
     allMatches.push(doc.data());
   });
-  showMatches(allMatches);
+
+  if(!apiLoaded){
+    showMatches(allMatches);
+  }
 });
+
+
 function showMatches(list){
+// 🔥 SMART PRIORITY FILTER
+let iplLive = list.filter(m => 
+  (m.series || m.matchNo || "").toLowerCase().includes("ipl") 
+  && m.status === "Live"
+);
+
+let otherLive = list.filter(m => 
+  m.status === "Live" && 
+  !(m.series || m.matchNo || "").toLowerCase().includes("ipl")
+);
+
+let iplAll = list.filter(m => 
+  (m.series || m.matchNo || "").toLowerCase().includes("ipl")
+);
+
+list =
+  iplLive.length > 0 ? iplLive :
+  otherLive.length > 0 ? otherLive :
+  iplAll.length > 0 ? iplAll :
+  list;
 
 let html = "";
 
@@ -790,6 +881,7 @@ if(index % 2 === 1){
 });
 
 document.getElementById("liveMatchList").innerHTML = html;
+showNextMatchCountdown(list);
 }
 
 /* FILTER */
@@ -896,6 +988,152 @@ document.getElementById("bottomAd").innerHTML =
 }
 });
 
+function showNextMatchCountdown(list){
+
+  let upcoming = list.filter(m => m.status === "Upcoming");
+
+  if(upcoming.length === 0){
+    document.getElementById("countdownBox").innerHTML = "";
+    return;
+  }
+
+  upcoming.sort((a,b)=>{
+    return new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time);
+  });
+
+  let next = upcoming[0];
+
+  function updateCountdown(){
+
+    let matchTime = new Date(next.date + " " + next.time).getTime();
+    let now = new Date().getTime();
+
+    let diff = matchTime - now;
+
+    if(diff <= 0){
+      document.getElementById("countdownBox").innerHTML = "Match starting now 🔴";
+      return;
+    }
+
+    let h = Math.floor(diff / (1000*60*60));
+    let m = Math.floor((diff % (1000*60*60)) / (1000*60));
+    let s = Math.floor((diff % (1000*60)) / 1000);
+document.getElementById("countdownBox").innerHTML =
+  `⏳ Next Match: ${next.team1} vs ${next.team2} in 
+   <span class="countdownTime">${h}h ${m}m ${s}s</span>`;
+    
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+}
+
+
+async function loadAPIMatches(){
+
+  const url = "https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live";
+
+  const options = {
+    method: "GET",
+headers: {
+  "X-RapidAPI-Key": "6d92d9e682msh6682f48339f7a41p1d30afjsn3f3d650c3cb7",
+  "X-RapidAPI-Host": "cricbuzz-cricket.p.rapidapi.com"
+}
+
+      };
+function showNextMatchCountdown(list){
+
+  // শুধু upcoming ম্যাচ নে
+  let upcoming = list.filter(m => m.status === "Upcoming");
+
+  if(upcoming.length === 0){
+    document.getElementById("countdownBox").innerHTML = "";
+    return;
+  }
+
+  // earliest ম্যাচ বের কর
+  upcoming.sort((a,b)=>{
+    return new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time);
+  });
+
+  let next = upcoming[0];
+
+  function updateCountdown(){
+
+    let matchTime = new Date(next.date + " " + next.time).getTime();
+    let now = new Date().getTime();
+
+    let diff = matchTime - now;
+
+    if(diff <= 0){
+      document.getElementById("countdownBox").innerHTML = "Match starting now 🔴";
+      return;
+    }
+
+    let h = Math.floor(diff / (1000*60*60));
+    let m = Math.floor((diff % (1000*60*60)) / (1000*60));
+    let s = Math.floor((diff % (1000*60)) / 1000);
+document.getElementById("countdownBox").innerHTML = `
+  <div class="countdownTitle">⏳ NEXT MATCH</div>
+  <div class="countdownMatch">${next.team1} 🆚 ${next.team2}</div>
+  <div class="countdownTime">${h}h ${m}m ${s}s</div>
+`;
+    
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+}
+
+
+
+  try{
+    let res = await fetch(url, options);
+    let data = await res.json();
+
+    console.log("API DATA:", data);
+
+    if(data.typeMatches){
+      let matches = [];
+data.typeMatches.forEach(type=>{
+  type.seriesMatches.forEach(series=>{
+    series.seriesAdWrapper?.matches?.forEach(m=>{
+      let dateObj = new Date(parseInt(m.matchInfo.startDate));
+
+      let statusMap =
+        m.matchInfo.state === "Live" ? "Live" :
+        m.matchInfo.state === "Preview" ? "Upcoming" :
+        "Finished";
+matches.push({
+  team1: m.matchInfo.team1.teamName,
+  team2: m.matchInfo.team2.teamName,
+  status: statusMap,
+  matchNo: m.matchInfo.matchDesc,
+  venue: m.matchInfo.venueInfo.ground,
+  date: dateObj.toLocaleDateString(),
+  time: dateObj.toLocaleTimeString(),
+  series: m.matchInfo.seriesName || "" // ✅ add this
+});
+      
+
+
+    });
+  });
+});
+      
+
+apiLoaded = true;
+      showMatches(matches); // 🔥 API data show
+    }
+
+  }catch(err){
+    console.log("API ERROR → Firebase fallback", err);
+    showMatches(allMatches); // fallback
+  }
+}
+
+
+
 // 👇 এইখানে বসা (IMPORTANT)
   function scrollToSection(id){
     document.getElementById(id).scrollIntoView();
@@ -905,6 +1143,8 @@ function setNavActive(el){
   el.classList.add("active");
 }
 
+loadAPIMatches();
+setInterval(loadAPIMatches, 600000); // 10 min
 </script>
 <div class="bottomNav">
 

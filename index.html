@@ -731,7 +731,11 @@ html{
 
 <div id="countdownBox" class="countdownWrap"></div>
 
-<div class="adBox" id="topAd">Advertisement</div>
+<div class="adBox" id="topAd">
+  <a href="https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545" target="_blank" style="text-decoration:none;color:#000;">
+    🔴 Watch Live Match (Click Here)
+  </a>
+</div>
 
 <h3 style="padding:10px">📰 Latest News</h3>
 <div id="newsList">Loading...</div>
@@ -742,7 +746,11 @@ html{
 <h3 style="padding:10px">🎬 Videos</h3>
 <div id="videoList"></div>
 
-<div class="adBox" id="bottomAd">Advertisement</div>
+<div class="adBox" id="bottomAd">
+  <a href="https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545" target="_blank" style="text-decoration:none;color:#000;">
+    📺 Watch Live Stream Now
+  </a>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -828,7 +836,7 @@ let statusClass =
   d.status=="Upcoming" ? "upcoming" : "finished";
 
 html += `
-<div class="matchCard">
+<div class="matchCard" onclick="window.open('https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545')">
 
 <div class="series">
   ${d.matchNo || "Match"} • ${d.venue || "Stadium"}
@@ -982,7 +990,10 @@ firestore.collection("ads").doc("main").onSnapshot(doc=>{
 if(doc.exists){
 let d = doc.data();
 document.getElementById("topAd").innerHTML =
-`<a href="${d.link}"><img src="${d.image}" width="100%"></a>`;
+`<a href="https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545" target="_blank">
+   🔴 Watch Live Match
+ </a>`;
+
 document.getElementById("bottomAd").innerHTML =
 `<a href="${d.link}"><img src="${d.image}" width="100%"></a>`;
 }
@@ -1005,7 +1016,7 @@ function showNextMatchCountdown(list){
 
   function updateCountdown(){
 
-    let matchTime = new Date(next.date + " " + next.time).getTime();
+    let matchTime = parseInt(next.matchTime);
     let now = new Date().getTime();
 
     let diff = matchTime - now;
@@ -1041,49 +1052,6 @@ headers: {
 }
 
       };
-function showNextMatchCountdown(list){
-
-  // শুধু upcoming ম্যাচ নে
-  let upcoming = list.filter(m => m.status === "Upcoming");
-
-  if(upcoming.length === 0){
-    document.getElementById("countdownBox").innerHTML = "";
-    return;
-  }
-
-  // earliest ম্যাচ বের কর
-  upcoming.sort((a,b)=>{
-    return new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time);
-  });
-
-  let next = upcoming[0];
-
-  function updateCountdown(){
-
-    let matchTime = new Date(next.date + " " + next.time).getTime();
-    let now = new Date().getTime();
-
-    let diff = matchTime - now;
-
-    if(diff <= 0){
-      document.getElementById("countdownBox").innerHTML = "Match starting now 🔴";
-      return;
-    }
-
-    let h = Math.floor(diff / (1000*60*60));
-    let m = Math.floor((diff % (1000*60*60)) / (1000*60));
-    let s = Math.floor((diff % (1000*60)) / 1000);
-document.getElementById("countdownBox").innerHTML = `
-  <div class="countdownTitle">⏳ NEXT MATCH</div>
-  <div class="countdownMatch">${next.team1} 🆚 ${next.team2}</div>
-  <div class="countdownTime">${h}h ${m}m ${s}s</div>
-`;
-    
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
 
 
 
@@ -1104,7 +1072,7 @@ data.typeMatches.forEach(type=>{
         m.matchInfo.state === "Live" ? "Live" :
         m.matchInfo.state === "Preview" ? "Upcoming" :
         "Finished";
-matches.push({
+  matches.push({
   team1: m.matchInfo.team1.teamName,
   team2: m.matchInfo.team2.teamName,
   status: statusMap,
@@ -1112,9 +1080,9 @@ matches.push({
   venue: m.matchInfo.venueInfo.ground,
   date: dateObj.toLocaleDateString(),
   time: dateObj.toLocaleTimeString(),
-  series: m.matchInfo.seriesName || "" // ✅ add this
-});
-      
+  series: m.matchInfo.seriesName || "",
+  matchTime: m.matchInfo.startDate // 🔥 add this
+});    
 
 
     });

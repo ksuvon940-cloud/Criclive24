@@ -527,51 +527,49 @@ h3::after{
 }
 
 /* 🎬 VIDEO GRID - ULTRA PRO */
+
 #videoList{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
+  display:flex;
+  gap:15px;
+  overflow-x:auto;
   padding:15px;
+  scroll-snap-type:x mandatory;
+}
+
+#videoList::-webkit-scrollbar{
+  display:none;
 }
 
 /* CARD */
 .videoCard{
+  min-width:260px;
+  flex:0 0 auto;
   background:#fff;
-  border-radius:18px;
+  border-radius:16px;
   overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,0.15);
-  transition:0.4s;
-  position:relative;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  transition:0.3s;
+  scroll-snap-align:start;
 }
 
-/* HOVER EFFECT */
 .videoCard:hover{
-  transform:translateY(-10px) scale(1.02);
-  box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  transform:translateY(-8px);
 }
 
 /* VIDEO */
 .videoCard iframe{
   width:100%;
-  height:180px;
+  height:160px;
   border:none;
-
-  /* 🔥 add this */
-  transition:0.4s;
-}
-
-.videoCard:hover iframe{
-  transform:scale(1.05);
 }
 
 /* TITLE */
 .videoCard p{
-  margin:0;
   padding:10px;
-  font-size:15px;
-  color:#111;
+  font-size:14px;
   font-weight:600;
 }
+
 /* 🔥 PLAY ICON OVERLAY */
 .videoCard::after{
   content:"▶";
@@ -697,10 +695,12 @@ html{
 
 </style>
 </head>
-
 <body>
 
+<script src="https://pl29011488.profitablecpmratenetwork.com/5f/8d/a1/5f8da1e40cff55ebc7cbbcf60463aa8f.js"></script>
+
 <div class="header">
+
   <div>🏏 CricLive24</div>
 
   <div class="nav">
@@ -736,15 +736,16 @@ html{
     🔴 Watch Live Match (Click Here)
   </a>
 </div>
+<h3 style="padding:10px">🎬 Videos</h3>
+<div id="videoList"></div>
 
 <h3 style="padding:10px">📰 Latest News</h3>
 <div id="newsList">Loading...</div>
 
 <h3 style="padding:10px">📊 Points Table</h3>
 <div id="pointsTable">Loading...</div>
+
 <div class="adBox">Advertisement</div>
-<h3 style="padding:10px">🎬 Videos</h3>
-<div id="videoList"></div>
 
 <div class="adBox" id="bottomAd">
   <a href="https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545" target="_blank" style="text-decoration:none;color:#000;">

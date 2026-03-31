@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Match Details - CricLive24</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  text-align:center;
+  padding:20px;
+}
+
+/* card */
+.container{
+  max-width:500px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:20px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+/* teams */
+.teams{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+}
+
+.team{
+  text-align:center;
+}
+
+.team img{
+  width:60px;
+  height:60px;
+}
+
+.vs{
+  font-size:20px;
+  font-weight:bold;
+}
+
+/* score */
+.score{
+  margin-top:15px;
+  font-size:20px;
+  font-weight:600;
+}
+
+/* status */
+.status{
+  margin-top:10px;
+  font-size:16px;
+}
+
+/* button */
+.btn{
+  margin-top:25px;
+  display:inline-block;
+  padding:12px 25px;
+  background:#00e5ff;
+  color:#000;
+  border-radius:30px;
+  text-decoration:none;
+  font-weight:bold;
+  box-shadow:0 0 15px #00e5ff;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2 id="title">Loading...</h2>
+
+<div class="teams">
+  <div class="team">
+    <img id="t1logo">
+    <div id="t1"></div>
+  </div>
+
+  <div class="vs">VS</div>
+
+  <div class="team">
+    <img id="t2logo">
+    <div id="t2"></div>
+  </div>
+</div>
+
+<div class="score" id="score"></div>
+
+<div class="status" id="status"></div>
+
+<div id="time"></div>
+
+<a href="https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545" target="_blank" class="btn">
+  🔴 Watch Live
+</a>
+
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("matchData"));
+
+if(data){
+
+  document.getElementById("title").innerText =
+    data.team1 + " vs " + data.team2;
+
+  document.getElementById("t1").innerText = data.team1;
+  document.getElementById("t2").innerText = data.team2;
+
+  document.getElementById("t1logo").src =
+    data.t1logo || "https://via.placeholder.com/60";
+
+  document.getElementById("t2logo").src =
+    data.t2logo || "https://via.placeholder.com/60";
+
+  document.getElementById("score").innerText =
+    (data.innings1?.score || "") +
+    "   " +
+    (data.innings2?.score || "");
+
+  document.getElementById("status").innerText =
+    "Status: " + data.status;
+
+  document.getElementById("time").innerText =
+    data.date + " " + data.time;
+
+}else{
+  document.getElementById("title").innerText = "No Match Data Found";
+}
+</script>
+
+</body>
+</html>

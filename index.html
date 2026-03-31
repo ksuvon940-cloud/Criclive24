@@ -6,7 +6,7 @@
 
 <meta name="description" content="Live cricket scores, match updates, news and videos. Follow IPL, international cricket and more on CricLive24.">
 <meta name="keywords" content="live cricket, IPL live, cricket score, cricket news, CricLive24, live match">
-
+<meta name="robots" content="index, follow">
 <!-- 🔥 OG TAGS -->
 <meta property="og:title" content="CricLive24 - Live Cricket Updates">
 <meta property="og:description" content="Watch live cricket scores, news, videos and live match updates on CricLive24.">
@@ -18,7 +18,7 @@
 
 
 <title>CricLive24</title>
-</head>
+
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -876,8 +876,7 @@ let statusClass =
   d.status=="Upcoming" ? "upcoming" : "finished";
 
 html += `
-<div class="matchCard" onclick="window.open('https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545')">
-
+<div class="matchCard" onclick='openMatch(${JSON.stringify(d).replace(/"/g, "&quot;")})'>
 <div class="series">
   ${d.matchNo || "Match"} • ${d.venue || "Stadium"}
 </div>
@@ -1146,6 +1145,16 @@ apiLoaded = true;
   function scrollToSection(id){
     document.getElementById(id).scrollIntoView();
   }
+
+function openMatch(match){
+
+  match.t1logo = teamData[match.team1]?.logo;
+  match.t2logo = teamData[match.team2]?.logo;
+
+  localStorage.setItem("matchData", JSON.stringify(match));
+  window.location.href = "match.html";
+}
+
 function setNavActive(el){
   document.querySelectorAll(".navItem").forEach(i=>i.classList.remove("active"));
   el.classList.add("active");

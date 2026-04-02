@@ -4,22 +4,55 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="description" content="Live cricket scores, match updates, news and videos. Follow IPL, international cricket and more on CricLive24.">
-<meta name="keywords" content="live cricket, IPL live, cricket score, cricket news, CricLive24, live match">
-<meta name="robots" content="index, follow">
-<!-- 🔥 OG TAGS -->
-<meta property="og:title" content="CricLive24 - Live Cricket Updates">
-<meta property="og:description" content="Watch live cricket scores, news, videos and live match updates on CricLive24.">
+<!-- ✅ TITLE (VERY IMPORTANT) -->
+<title>Live Cricket Score Today | IPL 2026 Live, Match Updates & News - CricLive24</title>
 
+<!-- ✅ BASIC SEO -->
+<meta name="description" content=" Watch live cricket score today, IPL 2026 live matches, ball-by-ball updates, news and highlights. Fastest cricket updates on CricLive24.CricLive24 brings real-time cricket updates worldwide.">
+
+<meta name="keywords" content="live cricket score, IPL 2026 live, cricket match today, cricket news, live match score, CricLive24">
+
+<meta name="robots" content="index, follow">
+<meta name="author" content="CricLive24">
+
+<!-- ✅ CANONICAL -->
+<link rel="canonical" href="https://ksuvon940-cloud.github.io/Criclive24/">
+
+<!-- ✅ FAVICON -->
+<link rel="icon" href="https://ksuvon940-cloud.github.io/Criclive24/logo.png" type="image/png">
+
+<!-- ✅ OPEN GRAPH (Facebook/WhatsApp) -->
+<meta property="og:title" content="CricLive24 - Live Cricket Scores & IPL Updates">
+<meta property="og:description" content="Watch live cricket scores, IPL updates, news and videos instantly on CricLive24.">
 <meta property="og:image" content="https://ksuvon940-cloud.github.io/Criclive24/logo.png">
 <meta property="og:url" content="https://ksuvon940-cloud.github.io/Criclive24/">
-
 <meta property="og:type" content="website">
 
+<!-- ✅ TWITTER SEO -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CricLive24 - Live Cricket Updates">
+<meta name="twitter:description" content="Live cricket scores, IPL matches, news & videos in one place.">
+<meta name="twitter:image" content="https://ksuvon940-cloud.github.io/Criclive24/logo.png">
 
-<title>CricLive24</title>
+<!-- ✅ GOOGLE VERIFICATION (later add) -->
+<meta name="google-site-verification" content="PASTE_YOUR_CODE_HERE">
 
+<!-- ✅ STRUCTURED DATA (VERY IMPORTANT 🔥) -->
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebSite",
+ "name": "CricLive24",
+ "url": "https://ksuvon940-cloud.github.io/Criclive24/",
+ "potentialAction": {
+   "@type": "SearchAction",
+   "target": "https://ksuvon940-cloud.github.io/Criclive24/?q={search_term_string}",
+   "query-input": "required name=search_term_string"
+ }
+}
+</script>
 
+<!-- ✅ FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 body{
@@ -43,7 +76,7 @@ body{
 
   /* 🔥 এইটা replace কর */
   background: rgba(20,30,40,0.8);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
 
   border-radius:20px;
   box-shadow:0 8px 25px rgba(0,0,0,0.3),
@@ -734,7 +767,7 @@ html{
 <div class="header">
 
 <div style="display:flex;align-items:center;gap:8px;">
-  <img src="logo.png" style="width:35px;height:35px;">
+  <img src="logo.png" style="width:35px;height:35px;" alt="CricLive24 Logo">
   CricLive24
 </div>
   
@@ -749,7 +782,7 @@ html{
 </div>
 <!-- ✅ HERO HERE -->
 <div class="hero" id="hero">
-<h2>🔥 Live Cricket Updates</h2>
+<h1>Live Cricket Score, IPL 2026 Updates - CricLive24</h1>
 <p>Scores • News • Videos in one place</p>
 </div>
 
@@ -772,14 +805,14 @@ html{
     🔴 Watch Live Match (Click Here)
   </a>
 </div>
-<h3 style="padding:10px">🎬 Videos</h3>
+<h2>🎬 Cricket Videos & Highlights</h2>
 <div id="videoList"></div>
 
-<h3 style="padding:10px">📰 Latest News</h3>
-<div id="newsList">Loading...</div>
+<h2>📰 Latest Cricket News</h2>
+<div id="newsList"></div>
 
-<h3 style="padding:10px">📊 Points Table</h3>
-<div id="pointsTable">Loading...</div>
+<h2>📊 IPL 2026 Points Table</h2>
+<div id="pointsTable"></div>
 
 <div class="adBox">
 
@@ -821,6 +854,18 @@ firebase.initializeApp(firebaseConfig);
 
 const firestore = firebase.firestore();
 const db = firebase.database();
+
+function createSlug(title){
+  return title.toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function openNews(slug){
+  window.location.href = "news.html?slug=" + slug;
+}
+
+
 
 /* TEAM */
 let teamData = {};
@@ -894,14 +939,14 @@ html += `
 
 <div style="display:flex;justify-content:space-between;margin-top:10px;">
   <div style="text-align:center">
-    <img src="${t1.logo || 'https://via.placeholder.com/40'}" style="width:40px;height:40px">
+    <img src="${t1.logo || 'https://via.placeholder.com/40'}" style="width:40px;height:40px" alt="${d.team1} logo">
     <div>${d.team1}</div>
   </div>
 
   <div>vs</div>
 
   <div style="text-align:center">
-    <img src="${t2.logo || 'https://via.placeholder.com/40'}" style="width:40px;height:40px">
+    <img src="${t2.logo || 'https://via.placeholder.com/40'}" style="width:40px;height:40px" alt="${d.team2} logo">
     <div>${d.team2}</div>
   </div>
 </div>
@@ -958,22 +1003,26 @@ document.querySelectorAll(".catBtn").forEach(b=>b.classList.remove("active"));
 btn.classList.add("active");
 }
 
+// ✅ NEWS SEO FUNCTIONS (ADD HERE)
+
+
+
 /* NEWS */
 db.ref("news").on("value", snapshot=>{
 let data = snapshot.val();
 let html = "";
 
 if(data){
-Object.values(data).reverse().forEach((n,index)=>{
+Object.entries(data).reverse().forEach(([key,n],index)=>{
 
+let slug = createSlug(n.title);
 html += `
-<div class="newsCard">
+<div class="newsCard" onclick="openNews('${slug}')">
 <b class="newsTitle">${n.title}</b><br>
 <small>${n.time}</small>
-${n.image ? `<img src="${n.image}">` : ""}
+${n.image ? `<img src="${n.image}" alt="${n.title}" loading="lazy">` : ""}
 </div>
 `;
-
 if(index % 3 === 2){
   html += `<div class="adBox">Advertisement</div>`;
 }
@@ -1000,9 +1049,9 @@ let d = doc.data();
 html += `
 <div class="tableRow">
 <div style="display:flex;align-items:center;gap:6px;">
-  <img src="${teamData[d.team]?.logo || 'https://via.placeholder.com/20'}"
-       style="width:20px;height:20px;border-radius:50%">
-       
+      <img src="${teamData[d.team]?.logo || 'https://via.placeholder.com/20'}"
+     alt="${d.team} logo"
+     style="width:20px;height:20px;border-radius:50%">   
   ${index==0 ? "🥇 " : index==1 ? "🥈 " : index==2 ? "🥉 " : ""}
   
   ${d.team}
@@ -1034,7 +1083,8 @@ if(!videoId){
 html += `
 <div class="videoCard">
   <div class="thumb" onclick="openVideo('${videoId}')">
-    <img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
+   <img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
+     alt="${v.title}"
      onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">
     <div class="playBtn">▶</div>
   </div>
@@ -1295,6 +1345,13 @@ setInterval(loadAPIMatches, 600000); // 10 min
 
   </div>
 </div>
+<footer style="padding:20px;text-align:center;font-size:14px;">
+  <a href="index.html">Home</a> |
+  <a href="match.html">Live Match</a> |
+  <a href="about.html">About</a> |
+  <a href="privacy.html">Privacy Policy</a> |
+  <a href="contact.html">Contact</a>
+</footer>
 
 </body>
 </html>

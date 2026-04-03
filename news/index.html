@@ -3,19 +3,13 @@ fetch("/Criclive24/news.json")
   .then(res => res.json())
   .then(data => {
 
-    let news = Object.values(data);
-
     let html = "";
 
-    news.forEach(n => {
-
-      let slug = n.title.toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "")
-        .trim(); // 🔥 important
+    Object.keys(data).forEach(key => {
+      let n = data[key];
 
       html += `<li>
-        <a href="/Criclive24/news/${slug}.html">${n.title}</a>
+        <a href="/Criclive24/news/${key}.html">${n.title}</a>
       </li>`;
     });
 
@@ -23,7 +17,7 @@ fetch("/Criclive24/news.json")
 
   })
   .catch(err => {
-    document.getElementById("newsList").innerHTML = "❌ News load failed";
+    document.getElementById("newsList").innerHTML = "❌ Failed";
     console.error(err);
   });
 </script>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Latest Cricket News | CricLive24</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="font-family:sans-serif; padding:20px">
+
+<h1>🔥 Latest Cricket News</h1>
+
+<ul id="newsList"></ul>
+
+<script>
+fetch("../news.json")
+  .then(res => res.json())
+  .then(data => {
+    let html = "";
+    data.forEach(n => {
+      html += `<li>
+        <a href="${n.slug}.html">${n.title}</a>
+      </li>`;
+    });
+    document.getElementById("newsList").innerHTML = html;
+  });
+</script>
+
+</body>
+</html>

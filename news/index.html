@@ -3,7 +3,7 @@ fetch("/Criclive24/news.json")
   .then(res => res.json())
   .then(data => {
 
-    let news = Object.values(data); // 🔥 FIX
+    let news = Object.values(data);
 
     let html = "";
 
@@ -11,7 +11,8 @@ fetch("/Criclive24/news.json")
 
       let slug = n.title.toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+        .replace(/(^-|-$)/g, "")
+        .trim(); // 🔥 important
 
       html += `<li>
         <a href="/Criclive24/news/${slug}.html">${n.title}</a>

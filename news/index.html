@@ -1,18 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Latest Cricket News | CricLive24</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-
-<body style="font-family:sans-serif; padding:20px">
-
-<h1>🔥 Latest Cricket News</h1>
-
-<ul id="newsList"></ul>
-
 <script>
-fetch("../news.json")
+fetch("/Criclive24/news.json")
   .then(res => res.json())
   .then(data => {
     let html = "";
@@ -22,8 +9,9 @@ fetch("../news.json")
       </li>`;
     });
     document.getElementById("newsList").innerHTML = html;
+  })
+  .catch(err => {
+    document.getElementById("newsList").innerHTML = "❌ News load failed";
+    console.error(err);
   });
 </script>
-
-</body>
-</html>

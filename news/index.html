@@ -5,19 +5,16 @@ fetch("/Criclive24/news.json")
 
     let html = "";
 
-    Object.keys(data).forEach(key => {
+    for (let key in data) {
       let n = data[key];
 
-      html += `<li>
-        <a href="/Criclive24/news/${key}.html">${n.title}</a>
-      </li>`;
-    });
+      html += '<li><a href="/Criclive24/news/' + key + '.html">' + n.title + '</a></li>';
+    }
 
     document.getElementById("newsList").innerHTML = html;
 
   })
-  .catch(err => {
-    document.getElementById("newsList").innerHTML = "❌ Failed";
-    console.error(err);
+  .catch(() => {
+    document.getElementById("newsList").innerHTML = "Error loading news";
   });
 </script>

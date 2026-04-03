@@ -1,8 +1,6 @@
 name: Auto Sitemap Generator
 
 on:
-  schedule:
-    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,11 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
       - name: Fetch News Data
-        run: curl -o news.json https://criclive24-99787-default-rtdb.firebaseio.com/news.json?print=pretty
+        run: curl -o news.json https://criclive24-99787-default-rtdb.firebaseio.com/news.json
 
       - name: Generate sitemap.xml
         run: |
@@ -25,10 +20,8 @@ jobs:
 
           echo '<url><loc>https://ksuvon940-cloud.github.io/Criclive24/</loc></url>' >> sitemap.xml
 
-          jq -c 'to_entries[] | .value' news.json | while IFS= read -r row; do
-            title=$(echo "$row" | jq -r '.title' 2>/dev/null)
+          grep -o '"title":"[^"]*"' news.json | sed 's/"title":"//g' | sed 's/"//g' | while read title; do
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-
             echo "<url><loc>https://ksuvon940-cloud.github.io/Criclive24/news.html?slug=$slug</loc></url>" >> sitemap.xml
           done
 
@@ -40,9 +33,9 @@ jobs:
           echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
           xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">' >> news-sitemap.xml
 
-          jq -c 'to_entries[] | .value' news.json | while IFS= read -r row; do
-            title=$(echo "$row" | jq -r '.title' 2>/dev/null)
-            time=$(echo "$row" | jq -r '.time' 2>/dev/null)
+          paste <(grep -o '"title":"[^"]*"' news.json | sed 's/"title":"//g' | sed 's/"//g') \
+                <(grep -o '"time":"[^"]*"' news.json | sed 's/"time":"//g' | sed 's/"//g') | while read title time; do
+
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
             echo "<url>" >> news-sitemap.xml

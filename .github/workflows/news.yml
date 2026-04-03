@@ -11,49 +11,33 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install jq
-        run: sudo apt-get install -y jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Fetch News
         run: curl -o news.json https://criclive24-99787-default-rtdb.firebaseio.com/news.json
 
-      - name: Check JSON
-        run: cat news.json
-
       - name: Generate Pages
         run: |
           mkdir -p news
-          template=$(cat template/news-template.html)
 
-          count=$(cat news.json | jq '. | length')
+          for row in $(cat news.json | jq -c 'to_entries[]'); do
 
-          if [ "$count" = "null" ]; then
-            echo "No data found ❌"
-            exit 0
-          fi
-
-          for i in $(seq 0 $(($count-1))); do
-            row=$(cat news.json | jq -c ".[$i]")
-
-            title=$(echo $row | jq -r '.title')
-            content=$(echo $row | jq -r '.content')
-            image=$(echo $row | jq -r '.image')
-            date=$(echo $row | jq -r '.time')
+            title=$(echo $row | jq -r '.value.title')
+            content=$(echo $row | jq -r '.value.content')
+            image=$(echo $row | jq -r '.value.image')
+            date=$(echo $row | jq -r '.value.time')
 
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
-            page="$template"
+            echo "<h1>$title</h1><p>$content</p>" > news/$slug.html
 
-            page="${page//\{\{TITLE\}\}/$title}"
-            page="${page//\{\{CONTENT\}\}/$content}"
-
-            echo "$page" > news/$slug.html
           done
 
-      - name: Commit
+      - name: Commit & Push
         run: |
           git config --global user.name "bot"
           git config --global user.email "bot@github.com"
 
           git add .
-          git commit -m "update" || echo "no change"
+          git commit -m "Auto news pages" || echo "no change"
           git push

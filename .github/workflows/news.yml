@@ -16,16 +16,14 @@ jobs:
       - name: Fetch News
         run: curl -o news.json https://criclive24-99787-default-rtdb.firebaseio.com/news.json
 
-      - name: Generate Pages
+      - name: Generate Pages SAFE FINAL
         run: |
           mkdir -p news
 
-          for row in $(cat news.json | jq -c 'to_entries[]'); do
+          cat news.json | jq -c 'to_entries[]' | while read row; do
 
-            title=$(echo $row | jq -r '.value.title')
-            content=$(echo $row | jq -r '.value.content')
-            image=$(echo $row | jq -r '.value.image')
-            date=$(echo $row | jq -r '.value.time')
+            title=$(echo "$row" | jq -r '.value.title')
+            content=$(echo "$row" | jq -r '.value.content')
 
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
@@ -33,11 +31,11 @@ jobs:
 
           done
 
-      - name: Commit & Push
+      - name: Commit
         run: |
           git config --global user.name "bot"
           git config --global user.email "bot@github.com"
 
           git add .
-          git commit -m "Auto news pages" || echo "no change"
+          git commit -m "fix pages" || echo "no change"
           git push

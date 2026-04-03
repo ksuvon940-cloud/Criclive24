@@ -3,13 +3,18 @@ fetch("/Criclive24/news.json")
   .then(res => res.json())
   .then(data => {
 
-    let news = data.articles || data;
+    let news = Object.values(data); // 🔥 FIX
 
     let html = "";
 
     news.forEach(n => {
+
+      let slug = n.title.toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
       html += `<li>
-        <a href="/Criclive24/news/${n.slug}.html">${n.title}</a>
+        <a href="/Criclive24/news/${slug}.html">${n.title}</a>
       </li>`;
     });
 

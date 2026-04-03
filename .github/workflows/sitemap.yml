@@ -25,8 +25,8 @@ jobs:
 
           echo '<url><loc>https://ksuvon940-cloud.github.io/Criclive24/</loc></url>' >> sitemap.xml
 
-          cat news.json | jq -c '.[]' | while read row; do
-            title=$(echo $row | jq -r '.title')
+          cat news.json | jq -c 'to_entries[] | .value' | while read row; do
+            title=$(echo "$row" | jq -r '.title')
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
             echo "<url><loc>https://ksuvon940-cloud.github.io/Criclive24/news.html?slug=$slug</loc></url>" >> sitemap.xml
@@ -40,9 +40,9 @@ jobs:
           echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
           xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">' >> news-sitemap.xml
 
-          cat news.json | jq -c '.[]' | while read row; do
-            title=$(echo $row | jq -r '.title')
-            time=$(echo $row | jq -r '.time')
+          cat news.json | jq -c 'to_entries[] | .value' | while read row; do
+            title=$(echo "$row" | jq -r '.title')
+            time=$(echo "$row" | jq -r '.time')
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
             echo "<url>

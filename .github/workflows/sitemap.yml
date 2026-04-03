@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -25,8 +25,8 @@ jobs:
 
           echo '<url><loc>https://ksuvon940-cloud.github.io/Criclive24/</loc></url>' >> sitemap.xml
 
-          cat news.json | jq -c 'to_entries[] | .value' | while IFS= read -r row; do
-            title=$(echo "$row" | jq -r '.title // empty')
+          jq -c 'to_entries[] | .value' news.json | while IFS= read -r row; do
+            title=$(echo "$row" | jq -r '.title' 2>/dev/null)
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
             echo "<url><loc>https://ksuvon940-cloud.github.io/Criclive24/news.html?slug=$slug</loc></url>" >> sitemap.xml
@@ -40,9 +40,9 @@ jobs:
           echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
           xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">' >> news-sitemap.xml
 
-          cat news.json | jq -c 'to_entries[] | .value' | while IFS= read -r row; do
-            title=$(echo "$row" | jq -r '.title // empty')
-            time=$(echo "$row" | jq -r '.time // empty')
+          jq -c 'to_entries[] | .value' news.json | while IFS= read -r row; do
+            title=$(echo "$row" | jq -r '.title' 2>/dev/null)
+            time=$(echo "$row" | jq -r '.time' 2>/dev/null)
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
             echo "<url>" >> news-sitemap.xml

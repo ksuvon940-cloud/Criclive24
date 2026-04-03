@@ -2,13 +2,19 @@
 fetch("/Criclive24/news.json")
   .then(res => res.json())
   .then(data => {
+
+    let news = data.articles || data;
+
     let html = "";
-    data.forEach(n => {
+
+    news.forEach(n => {
       html += `<li>
-        <a href="${n.slug}.html">${n.title}</a>
+        <a href="/Criclive24/news/${n.slug}.html">${n.title}</a>
       </li>`;
     });
+
     document.getElementById("newsList").innerHTML = html;
+
   })
   .catch(err => {
     document.getElementById("newsList").innerHTML = "❌ News load failed";

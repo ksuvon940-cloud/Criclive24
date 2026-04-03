@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{{TITLE}} | CricLive24</title>
+
+<meta name="description" content="{{DESC}}">
+<link rel="canonical" href="{{URL}}">
+
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESC}}">
+<meta property="og:image" content="{{IMAGE}}">
+<meta property="og:url" content="{{URL}}">
+<meta property="og:type" content="article">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{TITLE}}">
+<meta name="twitter:description" content="{{DESC}}">
+<meta name="twitter:image" content="{{IMAGE}}">
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "NewsArticle",
+ "headline": "{{TITLE}}",
+ "image": ["{{IMAGE}}"],
+ "datePublished": "{{DATE}}",
+ "dateModified": "{{DATE}}",
+ "mainEntityOfPage": "{{URL}}",
+ "author": {
+   "@type": "Organization",
+   "name": "CricLive24"
+ },
+ "publisher": {
+   "@type": "Organization",
+   "name": "CricLive24",
+   "logo": {
+     "@type": "ImageObject",
+     "url": "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
+   }
+ }
+}
+</script>
+
+<style>
+body{font-family:Arial;max-width:800px;margin:auto;padding:15px}
+img{width:100%;border-radius:10px}
+</style>
+</head>
+
+<body>
+
+<h1>{{TITLE}}</h1>
+<p>{{DATE}}</p>
+<img src="{{IMAGE}}">
+<div>{{CONTENT}}</div>
+
+</body>
+</html>

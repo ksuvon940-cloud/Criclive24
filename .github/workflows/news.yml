@@ -1,8 +1,6 @@
 name: Auto News Generator
 
 on:
-  schedule:
-    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 jobs:
@@ -13,17 +11,29 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install jq
-        run: sudo apt-get install jq
+        run: sudo apt-get install -y jq
 
       - name: Fetch News
         run: curl -o news.json https://criclive24-99787-default-rtdb.firebaseio.com/news.json
+
+      - name: Check JSON
+        run: cat news.json
 
       - name: Generate Pages
         run: |
           mkdir -p news
           template=$(cat template/news-template.html)
 
-          for row in $(cat news.json | jq -c '.[]'); do
+          count=$(cat news.json | jq '. | length')
+
+          if [ "$count" = "null" ]; then
+            echo "No data found ❌"
+            exit 0
+          fi
+
+          for i in $(seq 0 $(($count-1))); do
+            row=$(cat news.json | jq -c ".[$i]")
+
             title=$(echo $row | jq -r '.title')
             content=$(echo $row | jq -r '.content')
             image=$(echo $row | jq -r '.image')
@@ -31,40 +41,19 @@ jobs:
 
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
 
-            url="https://ksuvon940-cloud.github.io/Criclive24/news/$slug.html"
-
-            desc=$(echo "$content" | cut -c1-150)
-
             page="$template"
 
             page="${page//\{\{TITLE\}\}/$title}"
-            page="${page//\{\{DESC\}\}/$desc}"
-            page="${page//\{\{IMAGE\}\}/$image}"
-            page="${page//\{\{DATE\}\}/$date}"
-            page="${page//\{\{URL\}\}/$url}"
             page="${page//\{\{CONTENT\}\}/$content}"
 
             echo "$page" > news/$slug.html
           done
 
-      - name: Generate Sitemap
-        run: |
-          echo '<?xml version="1.0"?>' > sitemap.xml
-          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
-
-          echo '<url><loc>https://ksuvon940-cloud.github.io/Criclive24/</loc></url>' >> sitemap.xml
-
-          for file in news/*.html; do
-            echo "<url><loc>https://ksuvon940-cloud.github.io/Criclive24/$file</loc></url>" >> sitemap.xml
-          done
-
-          echo '</urlset>' >> sitemap.xml
-
-      - name: Commit & Push
+      - name: Commit
         run: |
           git config --global user.name "bot"
           git config --global user.email "bot@github.com"
 
           git add .
-          git commit -m "Auto news pages" || echo "no change"
+          git commit -m "update" || echo "no change"
           git push

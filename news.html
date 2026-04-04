@@ -1,147 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ✅ DYNAMIC SEO -->
-<title id="pageTitle">Loading News...</title>
-<meta name="description" id="metaDesc" content="Latest cricket news">
-<link rel="canonical" id="canonicalLink" href="">
+<!-- ✅ DYNAMIC TITLE -->
+<title id="pageTitle">Cricket News - CricLive24</title>
+
+<!-- ✅ SEO META -->
+<meta id="metaDesc" name="description" content="Latest cricket news, IPL updates, match reports and breaking news from CricLive24.">
+<meta name="robots" content="index, follow">
+<link id="canonicalLink" rel="canonical" href="">
 
 <!-- ✅ OPEN GRAPH -->
-<meta property="og:title" id="ogTitle">
-<meta property="og:description" id="ogDesc">
-<meta property="og:image" id="ogImage">
+<meta property="og:title" id="ogTitle" content="">
+<meta property="og:description" id="ogDesc" content="">
+<meta property="og:image" id="ogImage" content="">
 <meta property="og:type" content="article">
 
-<!-- ✅ STRUCTURED DATA -->
-<script type="application/ld+json" id="newsSchema"></script>
+<!-- ✅ TWITTER -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" id="twTitle" content="">
+<meta name="twitter:description" id="twDesc" content="">
+<meta name="twitter:image" id="twImage" content="">
 
 <style>
 body{
   font-family:Arial;
   margin:0;
-  background:#f5f5f5;
+  background:#f5f7fa;
 }
-
 .container{
   max-width:800px;
   margin:auto;
-  padding:15px;
+  padding:20px;
 }
-
-h1{
-  font-size:22px;
-}
-
-img{
-  width:100%;
-  border-radius:10px;
-  margin:10px 0;
-}
-
-.time{
-  color:gray;
-  font-size:13px;
-  margin-bottom:10px;
-}
-
+h1{font-size:26px;}
+img{width:100%;border-radius:10px;margin:15px 0;}
+p{line-height:1.7;font-size:17px;}
 </style>
 </head>
-
 <body>
 
 <div class="container">
-  <h1 id="title">Loading...</h1>
-  <div class="time" id="time"></div>
-  <img id="image" style="display:none;">
+  <h1 id="title"></h1>
+  <small id="time"></small>
+  <img id="image" src="">
   <p id="content"></p>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
+
 const firebaseConfig = {
   apiKey: "AIzaSyDFJd644ION6LvfWowXUIhXuaqKYRCvtKU",
   authDomain: "criclive24-99787.firebaseapp.com",
-  databaseURL: "https://criclive24-99787-default-rtdb.firebaseio.com/",
+  databaseURL: "https://criclive24-99787-default-rtdb.firebaseio.com/"
 };
+
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 🔥 GET SLUG
-const params = new URLSearchParams(window.location.search);
-const slugParam = params.get("slug");
+function getSlug(){
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get("slug");
+}
 
-// 🔥 SAME SLUG FUNCTION
 function createSlug(title){
   return title.toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
 
+let slug = getSlug();
+
+if(!slug){
+  document.getElementById("title").innerText = "News not found";
+}
+
+
 // 🔥 LOAD NEWS
 db.ref("news").once("value", snapshot=>{
-  let data = snapshot.val();
+  let data = snapshot.val() || {};
 
   Object.values(data).forEach(n=>{
-    let slug = createSlug(n.title);
+    let s = createSlug(n.title);
 
-    if(slug === slugParam){
+    if(s === slug){
 
-      // ✅ CONTENT LOAD
+      // ✅ SHOW CONTENT
       document.getElementById("title").innerText = n.title;
       document.getElementById("time").innerText = n.time;
-      document.getElementById("content").innerHTML = n.content || "";
-
-      if(n.image){
-        let img = document.getElementById("image");
-        img.src = n.image;
-        img.style.display = "block";
-      }
+     if(n.image){
+  document.getElementById("image").src = n.image;
+  document.getElementById("image").alt = n.title;
+}else{
+  document.getElementById("image").style.display = "none";
+}
+      document.getElementById("content").innerHTML =
+  n.content.split("\\n").map(p => "<p>"+p+"</p>").join("");
 
       // ✅ SEO UPDATE
       document.title = n.title + " | CricLive24";
-      document.getElementById("metaDesc").content = n.content ? n.content.substring(0,150) : n.title;
+
+      document.getElementById("metaDesc").content = n.title + " - Full match details, analysis, highlights and latest cricket updates on CricLive24.";
+      document.getElementById("canonicalLink").href = window.location.href;
 
       document.getElementById("ogTitle").content = n.title;
       document.getElementById("ogDesc").content = n.title;
-      document.getElementById("ogImage").content = n.image || "";
+      document.getElementById("ogImage").content = n.image || "https://ksuvon940-cloud.github.io/Criclive24/logo.png";
 
-      document.getElementById("canonicalLink").href = window.location.href;
+      document.getElementById("twTitle").content = n.title;
+      document.getElementById("twDesc").content = n.title;
+      document.getElementById("twImage").content = n.image || "https://ksuvon940-cloud.github.io/Criclive24/logo.png";
 
-      // ✅ NEWS SCHEMA (🔥 BIG SEO)
-    const schema = {
-  "@context": "https://schema.org",
-  "@type": "NewsArticle",
-  "headline": n.title,
-  "image": n.image ? [n.image] : [],
-  "datePublished": new Date(n.time).toISOString(),
-  "dateModified": new Date(n.time).toISOString(),
-  "mainEntityOfPage": window.location.href,
-  "description": n.content ? n.content.substring(0,150) : n.title,
-  "author": {
-    "@type": "Organization",
-    "name": "CricLive24"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "CricLive24",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
-    }
-  }
-};
+      // ✅ STRUCTURED DATA
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": n.title,
+        "image": [n.image],
+       "datePublished": new Date(n.time).toISOString() ,
+        "author": {
+          "@type": "Organization",
+          "name": "CricLive24"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "CricLive24",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
+          }
+        }
+      };
 
-      document.getElementById("newsSchema").textContent = JSON.stringify(schema);
+      let script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.innerHTML = JSON.stringify(schema);
+      document.head.appendChild(script);
 
     }
   });
+
+if(!document.getElementById("title").innerText){
+  document.getElementById("title").innerText = "News not found";
+}
+
 });
 </script>
 

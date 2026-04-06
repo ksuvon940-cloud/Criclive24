@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ✅ TITLE (VERY IMPORTANT) -->
-<title>Live Cricket Score Today | IPL 2026 Live, Match Updates & News - CricLive24</title>
+<title>Live Cricket Score Today | IPL 2026 Live Match Updates & News - CricLive24</title>
 
 <!-- ✅ BASIC SEO -->
 <meta name="description" content=" Watch live cricket score today, IPL 2026 live matches, ball-by-ball updates, news and highlights. Fastest cricket updates on CricLive24.CricLive24 brings real-time cricket updates worldwide.">
 
 <meta name="keywords" content="live cricket score, IPL 2026 live, cricket match today, cricket news, live match score, CricLive24">
 
-<meta name="robots" content="index, follow">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="googlebot" content="max-image-preview:large">
 <meta name="author" content="CricLive24">
 
 <!-- ✅ CANONICAL -->
@@ -51,6 +52,16 @@
  }
 }
 </script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Organization",
+ "name": "CricLive24",
+ "url": "https://ksuvon940-cloud.github.io/Criclive24/",
+ "logo": "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
+}
+</script>
+
 
 <!-- ✅ FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -782,7 +793,7 @@ html{
 </div>
 <!-- ✅ HERO HERE -->
 <div class="hero" id="hero">
-<h1>Live Cricket Score, IPL 2026 Updates - CricLive24</h1>
+<h1 itemprop="headline">Live Cricket Score, IPL 2026 Updates - CricLive24</h1>
 <p>Scores • News • Videos in one place</p>
 </div>
 
@@ -794,7 +805,7 @@ html{
   <div class="catBtn" onclick="filterMatch('Finished'); setActive(this)">Finished</div>
 </div>
 
-<div class="matchSlider" id="liveMatchList">
+
   <p style="padding:10px">Loading matches...</p>
 </div>
 
@@ -805,14 +816,15 @@ html{
     🔴 Watch Live Match (Click Here)
   </a>
 </div>
-<h2>🎬 Cricket Videos & Highlights</h2>
-<div id="videoList"></div>
 
-<h2>📰 Latest Cricket News</h2>
+<h2>🏏 Live Cricket Score Today</h2>
+<div class="matchSlider" id="liveMatchList"></div>
+
+<h2>📰 Latest IPL 2026 News & Updates</h2>
 <div id="newsList"></div>
 
-<h2>📊 IPL 2026 Points Table</h2>
-<div id="pointsTable"></div>
+<h2>🎬 Cricket Highlights & Videos</h2>
+<div id="videoList"></div>
 
 <div class="adBox">
 
@@ -862,7 +874,7 @@ function createSlug(title){
 }
 
 function openNews(slug){
-  window.location.href = "news/" + slug + ".html";
+  window.location.href = "news.html?slug=" + slug;
 }
 
 
@@ -1008,29 +1020,56 @@ btn.classList.add("active");
 
 
 /* NEWS */
+
 db.ref("news").on("value", snapshot=>{
 let data = snapshot.val();
 let html = "";
+
+// ✅ 👉 এখানে বসা (START)
+let schema = {
+ "@context": "https://schema.org",
+ "@type": "ItemList",
+ "itemListElement": []
+};
+// ✅ 👉 এখানে বসা (END)
 
 if(data){
 Object.entries(data).reverse().forEach(([key,n],index)=>{
 
 let slug = createSlug(n.title);
+
+// ✅ schema push (LOOP এর ভিতরে)
+schema.itemListElement.push({
+  "@type": "ListItem",
+  "position": index + 1,
+  "url": "https://ksuvon940-cloud.github.io/Criclive24/news.html?slug=" + slug
+});
+
 html += `
-<div class="newsCard" onclick="openNews('${slug}')">
-<b class="newsTitle">${n.title}</b><br>
-<small>${n.time}</small>
-${n.image ? `<img src="${n.image}" alt="${n.title}" loading="lazy">` : ""}
-</div>
+<a href="news.html?slug=${slug}" class="newsCard">
+  <b class="newsTitle">${n.title}</b><br>
+  <small>${n.time}</small>
+  ${n.image ? `<img src="${n.image}" alt="${n.title}" loading="lazy">` : ""}
+</a>
 `;
+
 if(index % 3 === 2){
   html += `<div class="adBox">Advertisement</div>`;
 }
+
 });
 }
 
+// ✅ 👉 LOOP শেষ হওয়ার পরে add কর
+let script = document.createElement("script");
+script.type = "application/ld+json";
+script.innerHTML = JSON.stringify(schema);
+document.head.appendChild(script);
+
 document.getElementById("newsList").innerHTML = html;
+
 });
+
 
 /* POINT TABLE */
 firestore.collection("points").onSnapshot(snapshot=>{

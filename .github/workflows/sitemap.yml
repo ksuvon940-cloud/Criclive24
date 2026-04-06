@@ -1,9 +1,7 @@
 name: Auto Sitemap Generator
 
 on:
-  schedule:
-    - cron: "0 */6 * * *"
-  workflow_dispatch:
+  workflow_dispatch
 
 jobs:
   build:
@@ -25,20 +23,18 @@ jobs:
 
           echo '<url><loc>https://ksuvon940-cloud.github.io/Criclive24/</loc></url>' >> sitemap.xml
 
-          jq -c 'to_entries[]' news.json | while read row; do
-            title=$(echo $row | jq -r '.value.title')
+          jq -r 'to_entries[] | .value.title' news.json | while read title; do
             slug=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-
             echo "<url><loc>https://ksuvon940-cloud.github.io/Criclive24/news.html?slug=$slug</loc></url>" >> sitemap.xml
           done
 
           echo '</urlset>' >> sitemap.xml
 
-      - name: Commit & Push
+      - name: Commit
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
           git add sitemap.xml
-          git commit -m "Auto sitemap update" || echo "No changes"
+          git commit -m "update sitemap" || echo "No change"
           git push

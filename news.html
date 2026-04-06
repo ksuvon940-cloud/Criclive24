@@ -9,7 +9,8 @@
 
 <!-- ✅ SEO META -->
 <meta id="metaDesc" name="description" content="Latest cricket news, IPL updates, match reports and breaking news from CricLive24.">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
 <link id="canonicalLink" rel="canonical" href="">
 
 <!-- ✅ OPEN GRAPH -->
@@ -17,6 +18,8 @@
 <meta property="og:description" id="ogDesc" content="">
 <meta property="og:image" id="ogImage" content="">
 <meta property="og:type" content="article">
+<meta property="og:url" id="ogUrl" content="">
+<meta property="article:publisher" content="CricLive24">
 
 <!-- ✅ TWITTER -->
 <meta name="twitter:card" content="summary_large_image">
@@ -43,10 +46,19 @@ p{line-height:1.7;font-size:17px;}
 <body>
 
 <div class="container">
+
   <h1 id="title"></h1>
   <small id="time"></small>
+
   <img id="image" src="">
-  <p id="content"></p>
+
+  <!-- 🔥 content এখন div (better SEO) -->
+  <div id="content" itemprop="articleBody"></div>
+
+  <!-- 🔥 internal linking -->
+  <h3>More Cricket News</h3>
+  <div id="relatedNews"></div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -63,6 +75,32 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+function loadRelatedNews(currentSlug){
+  db.ref("news").once("value", snapshot=>{
+    let html = "";
+    let count = 0;
+
+    snapshot.forEach(child=>{
+      let n = child.val();
+      let s = createSlug(n.title);
+
+      if(s !== currentSlug && count < 5){
+        html += `
+        <p>
+          <a href="news.html?slug=${s}">
+            🔗 ${n.title}
+          </a>
+        </p>`;
+        count++;
+      }
+    });
+
+    document.getElementById("relatedNews").innerHTML = html;
+  });
+}
+
+
 
 function getSlug(){
   const urlParams = new URLSearchParams(window.location.search);
@@ -100,9 +138,20 @@ db.ref("news").once("value", snapshot=>{
 }else{
   document.getElementById("image").style.display = "none";
 }
-      document.getElementById("content").innerHTML =
-  n.content.split("\\n").map(p => "<p>"+p+"</p>").join("");
+     let formattedContent = n.content
+  .split("\\n")
+  .map(p => "<p>" + p + "</p>")
+  .join("");
 
+// 🔥 auto H2 add (SEO boost)
+formattedContent = formattedContent.replaceAll(
+"</p>",
+"</p><h2>Latest Cricket Update</h2>"
+);
+
+document.getElementById("content").innerHTML = formattedContent;
+
+loadRelatedNews(slug);
       // ✅ SEO UPDATE
       document.title = n.title + " | CricLive24";
 
@@ -117,26 +166,41 @@ db.ref("news").once("value", snapshot=>{
       document.getElementById("twDesc").content = n.title;
       document.getElementById("twImage").content = n.image || "https://ksuvon940-cloud.github.io/Criclive24/logo.png";
 
+document.getElementById("ogUrl").content = window.location.href;
+
       // ✅ STRUCTURED DATA
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        "headline": n.title,
-        "image": [n.image],
-       "datePublished": new Date(n.time).toISOString() ,
-        "author": {
-          "@type": "Organization",
-          "name": "CricLive24"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "CricLive24",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
-          }
-        }
-      };
+     
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+
+  "headline": n.title,
+
+  "image": [
+    n.image || "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
+  ],
+
+  "datePublished": new Date().toISOString(),
+  "dateModified": new Date().toISOString(),
+
+  "mainEntityOfPage": window.location.href,
+
+  "author": {
+    "@type": "Organization",
+    "name": "CricLive24"
+  },
+
+  "publisher": {
+    "@type": "Organization",
+    "name": "CricLive24",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
+    }
+  }
+};
+
+
 
       let script = document.createElement("script");
       script.type = "application/ld+json";

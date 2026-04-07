@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ksuvon940-cloud.github.io/Criclive24/sitemap.xml

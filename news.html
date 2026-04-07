@@ -34,13 +34,50 @@ body{
   background:#f5f7fa;
 }
 .container{
-  max-width:800px;
+  max-width:900px;
   margin:auto;
   padding:20px;
 }
+
 h1{font-size:26px;}
 img{width:100%;border-radius:10px;margin:15px 0;}
 p{line-height:1.7;font-size:17px;}
+
+.related-item{
+margin-bottom:12px;
+}
+
+.related-item a{
+display:block;
+padding:10px;
+background:#fff;
+border-radius:6px;
+text-decoration:none;
+color:#111;
+box-shadow:0 2px 5px rgba(0,0,0,0.08);
+}
+
+.related-item a:hover{
+background:#f0f0f0;
+}
+
+#content span{
+background:none !important;
+}
+
+#content mark{
+background:none !important;
+}
+
+#content{
+line-height:1.8;
+font-size:18px;
+margin-top:20px;
+}
+
+#content br{
+margin-bottom:10px;
+}
 </style>
 </head>
 <body>
@@ -50,7 +87,7 @@ p{line-height:1.7;font-size:17px;}
   <h1 id="title"></h1>
   <small id="time"></small>
 
-  <img id="image" src="">
+  <img id="image" src="" loading="lazy">
 
   <!-- 🔥 content এখন div (better SEO) -->
   <div id="content" itemprop="articleBody"></div>
@@ -86,12 +123,12 @@ function loadRelatedNews(currentSlug){
       let s = createSlug(n.title);
 
       if(s !== currentSlug && count < 5){
-        html += `
-        <p>
-          <a href="news.html?slug=${s}">
-            🔗 ${n.title}
-          </a>
-        </p>`;
+       html += `
+<div class="related-item">
+<a href="news.html?slug=${s}">
+${n.title}
+</a>
+</div>`;
         count++;
       }
     });
@@ -138,18 +175,17 @@ db.ref("news").once("value", snapshot=>{
 }else{
   document.getElementById("image").style.display = "none";
 }
-     let formattedContent = n.content
-  .split("\\n")
-  .map(p => "<p>" + p + "</p>")
+    
+
+let contentText = n.content || n.title;
+let formattedContent = contentText
+  .split("\n")
+  .filter(p => p.trim() !== "")
+  .map(p => "<p>"+p+"</p>")
   .join("");
 
-// 🔥 auto H2 add (SEO boost)
-formattedContent = formattedContent.replaceAll(
-"</p>",
-"</p><h2>Latest Cricket Update</h2>"
-);
-
 document.getElementById("content").innerHTML = formattedContent;
+
 
 loadRelatedNews(slug);
       // ✅ SEO UPDATE
@@ -180,9 +216,8 @@ const schema = {
     n.image || "https://ksuvon940-cloud.github.io/Criclive24/logo.png"
   ],
 
-  "datePublished": new Date().toISOString(),
-  "dateModified": new Date().toISOString(),
-
+  "datePublished": n.time,
+"dateModified": n.time,
   "mainEntityOfPage": window.location.href,
 
   "author": {

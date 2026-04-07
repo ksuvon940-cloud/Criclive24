@@ -6,7 +6,19 @@
 
 <!-- ✅ TITLE (VERY IMPORTANT) -->
 <title>Live Cricket Score Today | IPL 2026 Live Match Updates & News - CricLive24</title>
-
+<!-- 🔥 Breadcrumb Structured Data -->
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [{
+ "@type": "ListItem",
+ "position": 1,
+ "name": "Home",
+ "item": "https://ksuvon940-cloud.github.io/Criclive24/"
+ }]
+}
+</script>
 <!-- ✅ BASIC SEO -->
 <meta name="description" content=" Watch live cricket score today, IPL 2026 live matches, ball-by-ball updates, news and highlights. Fastest cricket updates on CricLive24.CricLive24 brings real-time cricket updates worldwide.">
 
@@ -337,6 +349,13 @@ overflow:hidden;
  font-size:17px;
   line-height:1.4;
   font-weight:600;
+}
+
+.newsTime{
+font-size:13px;
+color:#777;
+margin-top:4px;
+display:block;
 }
 
 small{
@@ -807,7 +826,7 @@ html{
 
 
   <p style="padding:10px">Loading matches...</p>
-</div>
+
 
 <div id="countdownBox" class="countdownWrap"></div>
 
@@ -825,7 +844,8 @@ html{
 
 <h2>🎬 Cricket Highlights & Videos</h2>
 <div id="videoList"></div>
-
+<h2>📊 Points Table</h2>
+<div id="pointsTable"></div>
 <div class="adBox">
 
 <script>
@@ -1047,12 +1067,15 @@ schema.itemListElement.push({
 
 html += `
 <a href="news.html?slug=${slug}" class="newsCard">
-  <b class="newsTitle">${n.title}</b><br>
-  <small>${n.time}</small>
-  ${n.image ? `<img src="${n.image}" alt="${n.title}" loading="lazy">` : ""}
+
+<div class="newsTitle">${n.title}</div>
+
+<div class="newsTime">${n.time}</div>
+
+${n.image ? `<img src="${n.image}" alt="${n.title}" loading="lazy">` : ""}
+
 </a>
 `;
-
 if(index % 3 === 2){
   html += `<div class="adBox">Advertisement</div>`;
 }

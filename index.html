@@ -34,6 +34,10 @@
 <!-- ✅ FAVICON -->
 <link rel="icon" href="https://ksuvon940-cloud.github.io/Criclive24/logo.png" type="image/png">
 
+<!-- 🟢 PWA APP FEATURE -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#009270">
+
 <!-- ✅ OPEN GRAPH (Facebook/WhatsApp) -->
 <meta property="og:title" content="CricLive24 - Live Cricket Scores & IPL Updates">
 <meta property="og:description" content="Watch live cricket scores, IPL updates, news and videos instantly on CricLive24.">
@@ -1492,6 +1496,77 @@ setInterval(loadAPIMatches, 600000); // 10 min
   <a href="privacy.html">Privacy Policy</a> |
   <a href="contact.html">Contact</a>
 </footer>
+
+<!-- 📲 INSTALL APP POPUP -->
+<div id="installBox" style="
+position:fixed;
+bottom:90px;
+left:50%;
+transform:translateX(-50%);
+background:#111;
+color:#fff;
+padding:14px 20px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
+display:none;
+z-index:9999;
+">
+
+<span>📲 Install CricLive24 App</span>
+
+<button id="installBtn" style="
+margin-left:10px;
+padding:6px 14px;
+border:none;
+background:#00c9a7;
+color:white;
+border-radius:6px;
+cursor:pointer;
+">
+Install
+</button>
+
+</div>
+
+<script>
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+// ⏱️ 5 sec পরে popup দেখাবে
+  setTimeout(()=>{
+    document.getElementById("installBox").style.display="block";
+  },5000);
+});
+
+
+
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+
+  if(!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+
+  const choice = await deferredPrompt.userChoice;
+
+  if(choice.outcome === "accepted"){
+    console.log("User installed app");
+  }
+
+  deferredPrompt = null;
+  document.getElementById("installBox").style.display = "none";
+
+});
+</script>
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("service-worker.js")
+  .then(()=>console.log("Service Worker Registered"));
+}
+</script>
 
 </body>
 </html>

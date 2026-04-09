@@ -87,6 +87,60 @@ body{
   background:linear-gradient(135deg,#f1f3f6,#e2e8f0);
    padding-bottom:90px;
 }
+
+.breakingWrap{
+  display:flex;
+  align-items:center;
+  margin:12px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#111;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.breakingLabel{
+  background:#ff3b3b;
+  color:#fff;
+  padding:10px 16px;
+  font-weight:bold;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+.breakingSlider{
+  flex:1;
+  overflow:hidden;
+  position:relative;
+}
+
+.breakingTrack{
+  display:inline-flex;
+  gap:40px;
+  padding-left:100%;
+  animation:breakingMove 25s linear infinite;
+}
+
+.breakingItem{
+  white-space:nowrap;
+  font-size:14px;
+}
+
+.breakingItem a{
+  color:#fff;
+  text-decoration:none;
+}
+
+.breakingItem a:hover{
+  color:#00e5ff;
+}
+
+@keyframes breakingMove{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-100%)}
+}
+
+
+
 .bottomNav{
   position:fixed;
   bottom:12px;
@@ -816,6 +870,19 @@ html{
 <p>Scores • News • Videos in one place</p>
 </div>
 
+<div class="breakingWrap">
+  
+  <div class="breakingLabel">🔥 Breaking</div>
+  
+  <div class="breakingSlider">
+    <div class="breakingTrack" id="breakingTrack"></div>
+  </div>
+
+</div>
+
+
+
+
 <div class="categoryBar">
 
   <div class="catBtn active" onclick="filterMatch('all'); setActive(this)">All</div>
@@ -1045,6 +1112,9 @@ db.ref("news").on("value", snapshot=>{
 let data = snapshot.val();
 let html = "";
 
+let breakingHTML = "";
+
+
 // ✅ 👉 এখানে বসা (START)
 let schema = {
  "@context": "https://schema.org",
@@ -1057,6 +1127,14 @@ if(data){
 Object.entries(data).reverse().forEach(([key,n],index)=>{
 
 let slug = createSlug(n.title);
+
+breakingHTML += `
+<div class="breakingItem">
+<a href="news.html?slug=${slug}">
+🔥 ${n.title}
+</a>
+</div>
+`;
 
 // ✅ schema push (LOOP এর ভিতরে)
 schema.itemListElement.push({
@@ -1088,7 +1166,7 @@ let script = document.createElement("script");
 script.type = "application/ld+json";
 script.innerHTML = JSON.stringify(schema);
 document.head.appendChild(script);
-
+document.getElementById("breakingTrack").innerHTML = breakingHTML;
 document.getElementById("newsList").innerHTML = html;
 
 });

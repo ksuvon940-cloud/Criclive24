@@ -89,6 +89,55 @@
 <!-- ✅ FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
+
+/* APP SPLASH SCREEN */
+
+#appSplash{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(135deg,#000428,#004e92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+  animation:splashFade 2.3s forwards;
+}
+
+#appSplash img{
+  width:110px;
+  height:110px;
+  animation:logoZoom 1.8s ease;
+}
+
+/* zoom animation */
+@keyframes logoZoom{
+  0%{
+    transform:scale(0.3);
+    opacity:0;
+  }
+  50%{
+    transform:scale(1.2);
+    opacity:1;
+  }
+  100%{
+    transform:scale(1);
+  }
+}
+
+/* hide splash */
+@keyframes splashFade{
+  0%{opacity:1;}
+  85%{opacity:1;}
+  100%{
+    opacity:0;
+    visibility:hidden;
+  }
+}
+
+
 body{
   margin:0;
   font-family: 'Inter', Arial, sans-serif;
@@ -853,6 +902,12 @@ html{
 
 <body>
 
+<!-- APP SPLASH SCREEN -->
+<div id="appSplash">
+  <img src="logo.png" alt="CricLive24">
+</div>
+
+
 <!-- 🔴 Popunder -->
 <script src="https://pl29011488.profitablecpmratenetwork.com/5f/8d/a1/5f8da1e40cff55ebc7cbbcf60463aa8f.js"></script>
 
@@ -1543,6 +1598,19 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("service-worker.js")
   .then(()=>console.log("Service Worker Registered"));
 }
+</script>
+
+<script>
+window.addEventListener("load",function(){
+
+  setTimeout(()=>{
+    let splash = document.getElementById("appSplash");
+    if(splash){
+      splash.style.display="none";
+    }
+  },2200);
+
+});
 </script>
 
 <!-- 📲 INSTALL APP PRO -->

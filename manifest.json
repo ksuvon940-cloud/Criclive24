@@ -1,0 +1,20 @@
+{
+  "name": "CricLive24",
+  "short_name": "CricLive24",
+  "start_url": "/Criclive24/",
+  "display": "standalone",
+  "background_color": "#000428",
+  "theme_color": "#009270",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

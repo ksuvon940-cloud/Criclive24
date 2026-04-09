@@ -1,7 +1,7 @@
 {
   "name": "CricLive24",
   "short_name": "CricLive24",
-  "start_url": "/Criclive24/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#000428",
   "theme_color": "#009270",

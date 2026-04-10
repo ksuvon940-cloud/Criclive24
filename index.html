@@ -896,6 +896,95 @@ html{
   justify-content:center;
 }
 
+/* 🔵 STORY BAR */
+
+.storyBar{
+display:flex;
+gap:14px;
+overflow-x:auto;
+padding:12px;
+background:white;
+}
+
+.storyBar::-webkit-scrollbar{
+display:none;
+}
+
+.storyItem{
+min-width:70px;
+text-align:center;
+cursor:pointer;
+}
+
+.storyItem img{
+width:65px;
+height:65px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #ff0050;
+padding:2px;
+}
+
+.storyItem span{
+font-size:12px;
+display:block;
+margin-top:4px;
+}
+
+/* STORY VIEWER */
+
+#storyViewer{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+z-index:99999;
+}
+
+#storyViewer img{
+max-width:100%;
+max-height:80%;
+object-fit:contain;
+}
+
+.closeStory{
+position:absolute;
+top:20px;
+right:20px;
+font-size:25px;
+color:white;
+cursor:pointer;
+}
+
+.storyTitle{
+color:white;
+margin-top:10px;
+font-size:16px;
+}
+
+/* progress */
+
+.storyProgress{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:#333;
+}
+
+#storyProgressBar{
+height:100%;
+width:0%;
+background:#ff0050;
+}
+
 
 </style>
 </head>
@@ -934,6 +1023,24 @@ html{
 <div class="hero" id="hero">
 <h1 itemprop="headline">Live Cricket Score, IPL 2026 Updates - CricLive24</h1>
 <p>Scores • News • Videos in one place</p>
+</div>
+
+<!-- STORY BAR -->
+<div class="storyBar" id="storyBar"></div>
+
+<!-- STORY VIEWER -->
+<div id="storyViewer">
+
+  <span class="closeStory" onclick="closeStory()">✖</span>
+
+  <div class="storyProgress">
+    <div id="storyProgressBar"></div>
+  </div>
+
+  <img id="storyImage">
+
+  <div class="storyTitle" id="storyTitle"></div>
+
 </div>
 
 <div class="breakingWrap">
@@ -1019,6 +1126,134 @@ firebase.initializeApp(firebaseConfig);
 
 const firestore = firebase.firestore();
 const db = firebase.database();
+
+let stories = [];
+
+firestore.collection("stories").onSnapshot(snapshot=>{
+
+stories = [];
+let html="";
+
+snapshot.forEach(doc=>{
+
+let s = doc.data();
+
+// 24 hour auto delete
+if(Date.now() - Number(s.time) > 86400000){
+doc.ref.delete();
+return;
+}
+
+stories.push(s);
+let thumb = s.thumb || s.image;
+
+html += `
+<div class="storyItem" onclick="openStory(${stories.length-1})">
+<img src="${thumb}">
+<span>${s.title}</span>
+</div>
+`;
+
+});
+
+document.getElementById("storyBar").innerHTML = html;
+
+});
+
+let currentStory = 0;
+function openStory(index){
+
+currentStory = index;
+
+let s = stories[index];
+
+let viewer = document.getElementById("storyViewer");
+let img = document.getElementById("storyImage");
+
+// 🔥 old video remove
+let oldVideo = document.getElementById("storyVideo");
+if(oldVideo) oldVideo.remove();
+
+viewer.style.display="flex";
+
+if(s.type === "video"){
+
+img.style.display="none";
+
+let video = document.createElement("video");
+video.src = s.src;
+video.autoplay = true;
+video.controls = true;
+video.muted = false;
+video.style.maxWidth = "100%";
+video.style.maxHeight = "80%";
+video.id="storyVideo";
+
+viewer.appendChild(video);
+
+}else{
+
+img.style.display="block";
+img.src = s.src;
+
+}
+
+document.getElementById("storyTitle").innerText = s.title;
+
+startProgress();
+
+}
+
+
+function closeStory(){
+
+let video = document.getElementById("storyVideo");
+if(video) video.remove();
+
+document.getElementById("storyViewer").style.display="none";
+
+}
+function startProgress(){
+
+let bar = document.getElementById("storyProgressBar");
+
+bar.style.width="0%";
+
+let width=0;
+
+let timer=setInterval(()=>{
+
+width+=2;
+
+bar.style.width=width+"%";
+
+if(width>=100){
+
+clearInterval(timer);
+
+nextStory();
+
+}
+
+},100);
+
+}
+
+function nextStory(){
+
+currentStory++;
+
+if(currentStory >= stories.length){
+
+closeStory();
+
+return;
+
+}
+
+openStory(currentStory);
+
+}
 
 function createSlug(title){
   return title.toLowerCase()

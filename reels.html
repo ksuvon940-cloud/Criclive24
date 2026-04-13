@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CricLive24 Reels</title>
+
+<style>
+
+body{
+margin:0;
+background:black;
+font-family:Arial;
+overflow:hidden;
+}
+
+#reels{
+height:100vh;
+overflow-y:scroll;
+scroll-snap-type:y mandatory;
+}
+
+.reel{
+height:100vh;
+position:relative;
+scroll-snap-align:start;
+}
+
+iframe{
+width:100%;
+height:100%;
+border:none;
+pointer-events:auto;
+}
+/* LEFT INFO */
+
+.info{
+position:absolute;
+bottom:110px;
+left:15px;
+color:white;
+max-width:70%;
+}
+
+.creator{
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:6px;
+}
+
+.creator img{
+width:35px;
+height:35px;
+border-radius:50%;
+}
+
+.title{
+font-size:14px;
+opacity:0.9;
+}
+
+/* RIGHT ACTIONS */
+
+.actions{
+position:absolute;
+right:10px;
+bottom:120px;
+display:flex;
+flex-direction:column;
+gap:22px;
+align-items:center;
+color:white;
+}
+
+.actions div{
+text-align:center;
+font-size:12px;
+cursor:pointer;
+}
+
+.icon{
+font-size:26px;
+}
+
+/* HEART */
+
+.heart{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:90px;
+opacity:0;
+pointer-events:none;
+}
+
+.showHeart{
+animation:heartPop 0.8s;
+}
+
+@keyframes heartPop{
+0%{transform:translate(-50%,-50%) scale(0.5);opacity:1}
+100%{transform:translate(-50%,-50%) scale(1.5);opacity:0}
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="reels"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+
+const firebaseConfig = {
+apiKey: "AIzaSyDFJd644ION6LvfWowXUIhXuaqKYRCvtKU",
+authDomain: "criclive24-99787.firebaseapp.com",
+projectId: "criclive24-99787",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+const reels=document.getElementById("reels");
+
+/* LOAD REELS */
+
+db.collection("reels1").orderBy("time","desc").onSnapshot(snapshot=>{
+
+reels.innerHTML="";
+
+snapshot.forEach(doc=>{
+
+let r=doc.data();
+
+reels.innerHTML+=`
+
+<div class="reel" data-id="${doc.id}">
+
+<iframe
+src="https://www.youtube.com/embed/${r.video}?controls=1&loop=1&playlist=${r.video}&mute=1"
+allow="autoplay; encrypted-media"
+allowfullscreen>
+</iframe>
+<div class="heart">❤️</div>
+
+<div class="info">
+
+<div class="creator">
+<img src="https://i.imgur.com/2DhmtJ4.png">
+<b>@${r.creator}</b>
+</div>
+
+<div class="title">${r.title}</div>
+
+</div>
+
+<div class="actions">
+
+<div onclick="like('${doc.id}')">
+<div class="icon">❤️</div>
+<div>${r.likes||0}</div>
+</div>
+
+<div>
+<div class="icon">👁</div>
+<div>${r.views||0}</div>
+</div>
+
+<div onclick="share('${r.video}')">
+<div class="icon">📤</div>
+<div>Share</div>
+</div>
+
+<div onclick="toggleSound(this)">
+<div class="icon">🔊</div>
+<div>Sound</div>
+</div>
+
+
+</div>
+
+</div>
+
+`;
+
+});
+
+});
+
+
+/* LIKE */
+
+function like(id){
+
+db.collection("reels1").doc(id).update({
+likes:firebase.firestore.FieldValue.increment(1)
+});
+
+}
+
+
+/* SHARE */
+
+function share(video){
+
+let link="https://youtube.com/shorts/"+video;
+
+
+if(navigator.share){
+
+navigator.share({
+title:"Watch this reel",
+url:link
+});
+
+}else{
+
+alert(link);
+
+}
+
+}
+
+
+/* DOUBLE TAP */
+
+let lastTap=0;
+
+document.addEventListener("click",function(e){
+
+let now=new Date().getTime();
+
+if(now-lastTap<300){
+
+let reel=e.target.closest(".reel");
+
+if(reel){
+
+let heart=reel.querySelector(".heart");
+heart.classList.add("showHeart");
+
+setTimeout(()=>{
+heart.classList.remove("showHeart")
+},800);
+
+}
+
+}
+
+lastTap=now;
+
+});
+
+function toggleSound(btn){
+
+const iframe = btn.closest('.reel').querySelector('iframe');
+
+let src = iframe.src;
+
+if(src.includes("mute=1")){
+iframe.src = src.replace("mute=1","mute=0");
+}else{
+iframe.src = src.replace("mute=0","mute=1");
+}
+
+}
+</script>
+
+</body>
+</html>

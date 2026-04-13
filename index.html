@@ -1909,7 +1909,7 @@ progress.style.width = "0%";
 
 /* 🔥 REELS PREVIEW SYSTEM */
 
-firestore.collection("reels1")
+firestore.collection("reels")
 .orderBy("time","desc")
 .limit(15)
 .onSnapshot(snapshot=>{
@@ -1919,7 +1919,7 @@ let html="";
 snapshot.forEach(doc=>{
 
 let r = doc.data();
-let id = getVideoId(r.video);
+let id = getVideoId(r.video || r.link);
 
 html += `
 <div class="reelPreview" onclick="openReel('${doc.id}')">

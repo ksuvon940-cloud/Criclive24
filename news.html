@@ -270,7 +270,7 @@ parts.forEach((p,index)=>{
 
 formattedContent += "<p>"+p+"</p>";
 
-// 🔥 First Paragraph Ad
+// First paragraph ad
 if(index === 0){
 formattedContent += `
 <div class="ad-box">
@@ -281,7 +281,7 @@ formattedContent += `
 `;
 }
 
-// 🔥 Auto paragraph ad (every 3)
+// Every 3 paragraph ad
 if((index+1) % 3 === 0){
 formattedContent += `
 <div class="ad-box">
@@ -294,8 +294,7 @@ formattedContent += `
 
 });
 
-
-
+// last ad
 formattedContent += `
 <div class="ad-box">
 <a href="https://www.profitablecpmratenetwork.com/piqbwyxh65?key=c24ef7f0fc0d730398ed449dad727a54" target="_blank" rel="noopener">
@@ -303,15 +302,13 @@ formattedContent += `
 </a>
 </div>
 `;
-}
-
-});
-
 
 document.getElementById("content").innerHTML = formattedContent;
 
-
 loadRelatedNews(slug);
+
+
+
       // ✅ SEO UPDATE
       document.title = n.title + " | CricLive24";
 

@@ -130,20 +130,32 @@ const reels=document.getElementById("reels");
 
 /* LOAD REELS */
 
-db.collection("reels1").orderBy("time","desc").onSnapshot(snapshot=>{
+db.collection("reels").orderBy("time","desc").onSnapshot(snapshot=>{
 
 reels.innerHTML="";
 
 snapshot.forEach(doc=>{
 
-let r=doc.data();
+let r = doc.data();
+let videoId = r.video;
 
+if(videoId.includes("shorts/")){
+videoId = videoId.split("shorts/")[1];
+}
+
+if(videoId.includes("watch?v=")){
+videoId = videoId.split("watch?v=")[1];
+}
+
+if(videoId.includes("?")){
+videoId = videoId.split("?")[0];
+}
 reels.innerHTML+=`
 
 <div class="reel" data-id="${doc.id}">
 
 <iframe
-src="https://www.youtube.com/embed/${r.video}?controls=1&loop=1&playlist=${r.video}&mute=1"
+src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1"
 allow="autoplay; encrypted-media"
 allowfullscreen>
 </iframe>
@@ -152,7 +164,7 @@ allowfullscreen>
 <div class="info">
 
 <div class="creator">
-<img src="https://i.imgur.com/2DhmtJ4.png">
+<img src="${r.avatar}">
 <b>@${r.creator}</b>
 </div>
 
@@ -198,7 +210,7 @@ allowfullscreen>
 
 function like(id){
 
-db.collection("reels1").doc(id).update({
+db.collection("reels").doc(id).update({
 likes:firebase.firestore.FieldValue.increment(1)
 });
 
@@ -209,7 +221,7 @@ likes:firebase.firestore.FieldValue.increment(1)
 
 function share(video){
 
-let link="https://youtube.com/shorts/"+video;
+let link = video;
 
 
 if(navigator.share){

@@ -986,6 +986,127 @@ background:#ff0050;
 }
 
 
+#reelsPreview{
+display:flex;
+gap:18px;
+overflow-x:auto;
+padding:15px;
+}
+
+#reelsPreview::-webkit-scrollbar{
+display:none;
+}
+
+/* reel card */
+
+/* 🔥 REELS VERTICAL CARD */
+
+.reelPreview{
+width:120px;
+cursor:pointer;
+text-align:center;
+}
+
+.reelCircle{
+width:120px;
+height:200px;
+border-radius:14px;
+overflow:hidden;
+position:relative;
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
+}
+
+.reelCircle video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* hover effect */
+
+.reelPreview:hover{
+transform:scale(1.05);
+transition:0.3s;
+}
+
+/* progress bar */
+
+.reelProgress{
+position:absolute;
+bottom:0;
+left:0;
+height:3px;
+background:#00e5ff;
+width:0%;
+}
+
+/* views */
+
+.reelViews{
+position:absolute;
+bottom:6px;
+right:6px;
+font-size:10px;
+background:rgba(0,0,0,0.6);
+padding:2px 6px;
+border-radius:8px;
+color:white;
+}
+
+/* title */
+
+.reelTitle{
+font-size:11px;
+margin-top:6px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+
+/* progress bar */
+
+.reelProgress{
+position:absolute;
+bottom:0;
+left:0;
+height:3px;
+background:#00e5ff;
+width:0%;
+}
+
+/* view counter */
+
+.reelViews{
+position:absolute;
+bottom:5px;
+right:6px;
+font-size:10px;
+background:rgba(0,0,0,0.6);
+padding:2px 5px;
+border-radius:8px;
+color:white;
+}
+
+/* title */
+
+.reelTitle{
+font-size:11px;
+margin-top:5px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+/* animation */
+
+.reelCircle:hover{
+transform:scale(1.1);
+transition:0.3s;
+box-shadow:0 0 12px #ff0050;
+}
+
+
 </style>
 </head>
 
@@ -1010,13 +1131,13 @@ background:#ff0050;
   CricLive24
 </div>
   
-
-  <div class="nav">
-    <span onclick="setActive(this);scrollToSection('hero')">Home</span>
-    <span onclick="scrollToSection('newsList')">News</span>
-    <span onclick="scrollToSection('videoList')">Videos</span>
-  </div>
-
+<div class="nav">
+  <span onclick="setActive(this);scrollToSection('hero')">Home</span>
+  <span onclick="scrollToSection('newsList')">News</span>
+  <span onclick="scrollToSection('videoList')">Videos</span>
+  <span onclick="window.location.href='reels.html'">Reels</span>
+</div>
+ 
   <span style="font-size:13px;opacity:0.8;">Login</span>
 </div>
 <!-- ✅ HERO HERE -->
@@ -1084,6 +1205,10 @@ background:#ff0050;
 
 <h2>🎬 Cricket Highlights & Videos</h2>
 <div id="videoList"></div>
+<h2>🔥 Trending Reels</h2>
+
+<div id="reelsPreview"></div>
+
 <h2>📊 Points Table</h2>
 <div id="pointsTable"></div>
 <div class="adBox">
@@ -1729,6 +1854,106 @@ window.onclick = function(e){
 
 loadAPIMatches();
 setInterval(loadAPIMatches, 600000); // 10 min
+
+
+
+/* 🔥 REEL HOVER AUTOPLAY + PROGRESS */
+
+document.addEventListener("mouseover",function(e){
+
+if(e.target.tagName === "VIDEO" && e.target.closest(".reelCircle")){
+
+let video = e.target;
+let progress = video.parentElement.querySelector(".reelProgress");
+
+video.play();
+
+let duration = video.duration || 5;
+
+let percent = 0;
+
+let interval = setInterval(()=>{
+
+percent += 100 / (duration * 10);
+
+progress.style.width = percent + "%";
+
+if(percent >= 100){
+clearInterval(interval);
+}
+
+},100);
+
+}
+
+});
+
+
+document.addEventListener("mouseout",function(e){
+
+if(e.target.tagName === "VIDEO" && e.target.closest(".reelCircle")){
+
+let video = e.target;
+let progress = video.parentElement.querySelector(".reelProgress");
+
+video.pause();
+video.currentTime = 0;
+
+progress.style.width = "0%";
+
+}
+
+});
+
+
+
+/* 🔥 REELS PREVIEW SYSTEM */
+
+firestore.collection("reels1")
+.orderBy("time","desc")
+.limit(15)
+.onSnapshot(snapshot=>{
+
+let html="";
+
+snapshot.forEach(doc=>{
+
+let r = doc.data();
+let id = getVideoId(r.video);
+
+html += `
+<div class="reelPreview" onclick="openReel('${doc.id}')">
+
+<div class="reelCircle">
+
+<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg">
+
+<div class="playBtn">▶</div>
+
+<div class="reelViews">
+👁 ${r.views || 0}
+</div>
+
+</div>
+
+<div class="reelTitle">
+${r.title || "Reel"}
+</div>
+
+</div>
+`;
+
+});
+
+document.getElementById("reelsPreview").innerHTML = html;
+
+});
+
+function openReel(id){
+window.location.href="reels.html?id="+id;
+}
+
+
 </script>
 <div class="bottomNav">
 
@@ -1747,6 +1972,10 @@ setInterval(loadAPIMatches, 600000); // 10 min
   <div class="navItem" onclick="setNavActive(this);scrollToSection('videoList')">
     🎬<span>Videos</span>
   </div>
+<div class="navItem" onclick="window.location.href='reels.html'">
+  🎥<span>Reels</span>
+</div>
+
 
 </div>
 

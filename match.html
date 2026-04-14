@@ -4,83 +4,132 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Match Details - CricLive24</title>
+<title>Live Match - CricLive24</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <style>
+
 body{
-  margin:0;
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
-  text-align:center;
-  padding:20px;
+margin:0;
+font-family:'Inter',sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+padding:20px;
 }
 
-/* card */
 .container{
-  max-width:500px;
-  margin:auto;
-  background:rgba(255,255,255,0.05);
-  padding:20px;
-  border-radius:20px;
-  backdrop-filter:blur(12px);
-  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+max-width:800px;
+margin:auto;
+background:rgba(255,255,255,0.05);
+padding:20px;
+border-radius:20px;
+backdrop-filter:blur(12px);
+box-shadow:0 10px 40px rgba(0,0,0,0.5);
 }
 
 /* teams */
-.teams{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:20px;
-}
 
-.team{
-  text-align:center;
+.teams{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:20px;
 }
 
 .team img{
-  width:60px;
-  height:60px;
+width:60px;
+height:60px;
 }
 
-.vs{
-  font-size:20px;
-  font-weight:bold;
+/* PLAYER */
+#playerBox{
+position:relative;
+overflow:hidden;
+height:420px;
+border-radius:10px;
+margin-top:20px;
 }
 
-/* score */
-.score{
-  margin-top:15px;
-  font-size:20px;
-  font-weight:600;
+#playerBox iframe{
+position:absolute;
+top:-120px;
+left:-45%;
+width:200%;
+height:700px;
+border:none;
 }
 
-/* status */
-.status{
-  margin-top:10px;
-  font-size:16px;
+/* servers */
+
+.servers{
+margin-top:10px;
+display:flex;
+gap:8px;
+justify-content:center;
+flex-wrap:wrap;
 }
 
-/* button */
-.btn{
-  margin-top:25px;
-  display:inline-block;
-  padding:12px 25px;
-  background:#00e5ff;
-  color:#000;
-  border-radius:30px;
-  text-decoration:none;
-  font-weight:bold;
-  box-shadow:0 0 15px #00e5ff;
-  transition:0.3s;
+.servers button{
+padding:8px 14px;
+border:none;
+background:#00e5ff;
+color:#000;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
 }
 
-.btn:hover{
-  transform:scale(1.05);
+.servers button:hover{
+transform:scale(1.05);
 }
+
+/* viewer */
+
+.viewer{
+margin-top:8px;
+font-size:14px;
+}
+
+/* chat */
+
+.chatBox{
+margin-top:20px;
+background:#111;
+padding:10px;
+border-radius:10px;
+}
+
+#messages{
+height:150px;
+overflow:auto;
+text-align:left;
+font-size:14px;
+}
+
+.chatInput{
+display:flex;
+margin-top:10px;
+}
+
+.chatInput input{
+flex:1;
+padding:8px;
+border:none;
+}
+
+.chatInput button{
+padding:8px 15px;
+border:none;
+background:#00e5ff;
+cursor:pointer;
+}
+
 </style>
 
 </head>
@@ -91,61 +140,285 @@ body{
 <h2 id="title">Loading...</h2>
 
 <div class="teams">
-  <div class="team">
-    <img id="t1logo">
-    <div id="t1"></div>
-  </div>
 
-  <div class="vs">VS</div>
-
-  <div class="team">
-    <img id="t2logo">
-    <div id="t2"></div>
-  </div>
+<div>
+<img id="t1logo">
+<div id="t1"></div>
 </div>
 
-<div class="score" id="score"></div>
+<div>VS</div>
 
-<div class="status" id="status"></div>
+<div>
+<img id="t2logo">
+<div id="t2"></div>
+</div>
 
+</div>
+
+<div id="score"></div>
+<div id="status"></div>
 <div id="time"></div>
 
-<a href="https://www.profitablecpmratenetwork.com/wh61eyp4?key=bc1825a58101ca99f440f254803c1545" target="_blank" class="btn">
-  🔴 Watch Live
-</a>
+<!-- PLAYER -->
+
+<div id="playerBox"></div>
+
+<div class="servers">
+
+<button onclick="playStream(0)">HD 1</button>
+<button onclick="playStream(1)">HD 2</button>
+<button onclick="playYT()">YouTube</button>
+<button onclick="playFB()">Facebook</button>
+
+</div>
+
+<div class="viewer">
+👁 <span id="viewerCount">0</span> watching
+</div>
+
+<!-- CHAT -->
+
+<div class="chatBox">
+
+<div id="messages"></div>
+
+<div class="chatInput">
+<input id="msgInput" placeholder="Type message...">
+<button onclick="sendMsg()">Send</button>
+</div>
+
+</div>
 
 </div>
 
 <script>
+
+/* MATCH DATA */
+
+
+/* FIREBASE */
+const firebaseConfig = {
+  apiKey: "AIzaSyDFJd644ION6LvfWowXUIhXuaqKYRCvtKU",
+  authDomain: "criclive24-99787.firebaseapp.com",
+  databaseURL: "https://criclive24-99787-default-rtdb.firebaseio.com/",
+  projectId: "criclive24-99787",
+  storageBucket: "criclive24-99787.appspot.com"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+
+
 let data = JSON.parse(localStorage.getItem("matchData"));
 
 if(data){
 
-  document.getElementById("title").innerText =
-    data.team1 + " vs " + data.team2;
+document.getElementById("title").innerText =
+data.team1+" vs "+data.team2;
 
-  document.getElementById("t1").innerText = data.team1;
-  document.getElementById("t2").innerText = data.team2;
+document.getElementById("t1").innerText=data.team1;
+document.getElementById("t2").innerText=data.team2;
 
-  document.getElementById("t1logo").src =
-    data.t1logo || "https://via.placeholder.com/60";
+document.getElementById("t1logo").src=data.t1logo;
+document.getElementById("t2logo").src=data.t2logo;
 
-  document.getElementById("t2logo").src =
-    data.t2logo || "https://via.placeholder.com/60";
+document.getElementById("score").innerText=
+(data.innings1?.score||"")+" "+
+(data.innings2?.score||"");
 
-  document.getElementById("score").innerText =
-    (data.innings1?.score || "") +
-    "   " +
-    (data.innings2?.score || "");
+document.getElementById("status").innerText=
+"Status: "+data.status;
 
-  document.getElementById("status").innerText =
-    "Status: " + data.status;
+document.getElementById("time").innerText=
+data.date+" "+data.time;
 
-  document.getElementById("time").innerText =
-    data.date + " " + data.time;
+}
 
+/* STREAM LOAD FROM FIREBASE */
+
+let streams=[];
+let ytLive="";
+let fbLive="";
+
+firebase.database().ref("streams").on("value",snap=>{
+
+let s = snap.val();
+
+if(!s) return;
+
+streams=[
+s.hd1 || "",
+s.hd2 || ""
+];
+
+ytLive = s.youtube || "";
+fbLive = s.facebook || "";
+
+});
+
+
+/* PLAY M3U8 */
+function playStream(i){
+
+let link = streams[i];
+
+if(!link){
+document.getElementById("playerBox").innerHTML="<h3>No Stream</h3>";
+return;
+}
+
+/* M3U8 stream */
+
+if(link.includes(".m3u8")){
+
+document.getElementById("playerBox").innerHTML=
+'<video id="video" controls autoplay></video>';
+
+let video=document.getElementById("video");
+
+if(Hls.isSupported()){
+let hls=new Hls();
+hls.loadSource(link);
+hls.attachMedia(video);
 }else{
-  document.getElementById("title").innerText = "No Match Data Found";
+video.src=link;
+}
+
+}
+
+/* iframe stream */
+
+else{
+
+document.getElementById("playerBox").innerHTML=
+'<iframe src="'+link+'" allowfullscreen allow="autoplay; fullscreen"></iframe>';
+
+}
+
+}
+
+/* YOUTUBE */
+
+function playYT(){
+
+document.getElementById("playerBox").innerHTML=
+'<iframe src="'+ytLive+'?autoplay=1" allowfullscreen></iframe>';
+
+}
+
+/* FACEBOOK */
+
+function playFB(){
+
+document.getElementById("playerBox").innerHTML=
+'<iframe src="'+fbLive+'" allowfullscreen></iframe>';
+
+}
+
+/* AUTO FALLBACK */
+
+function autoStream(){
+
+// first try HD1
+if(streams[0]){
+playStream(0);
+}
+
+// 5 sec check
+setTimeout(()=>{
+
+let v=document.getElementById("video");
+
+if(!v || v.readyState===0){
+
+// try HD2
+if(streams[1]){
+playStream(1);
+}else{
+
+// fallback youtube
+
+if(ytLive){
+playYT();
+}else{
+document.getElementById("playerBox").innerHTML=
+"<h3>Stream not available</h3>";
+}
+}
+
+}
+
+},5000);
+
+}
+window.onload=()=>{
+
+setTimeout(()=>{
+
+if(streams.length>0){
+autoStream();
+}
+
+},2000);
+
+};
+
+let viewersRef=firebase.database().ref("viewers");
+
+let user = "u"+Math.random().toString(36).substr(2,9);
+
+firebase.database().ref("viewers/"+user).set(true);
+
+firebase.database().ref("viewers").on("value",snap=>{
+document.getElementById("viewerCount").innerText=snap.numChildren();
+});
+
+window.addEventListener("beforeunload",()=>{
+firebase.database().ref("viewers/"+user).remove();
+});
+
+viewersRef.on("value",snap=>{
+document.getElementById("viewerCount").innerText=snap.val();
+});
+
+window.addEventListener("beforeunload",()=>{
+viewersRef.transaction(v=>(v||1)-1);
+});
+
+/* CHAT */
+
+let chatRef=firebase.database().ref("chat");
+
+chatRef.on("child_added",snap=>{
+let d=snap.val();
+document.getElementById("messages").innerHTML+=
+"<div>"+d+"</div>";
+});
+
+function sendMsg(){
+
+let msg=document.getElementById("msgInput").value.trim();
+
+/* empty message block */
+
+if(msg.length < 1){
+return;
+}
+
+/* message limit */
+
+if(msg.length > 120){
+msg = msg.substring(0,120);
+}
+
+/* send message */
+
+chatRef.push(msg);
+
+/* clear input */
+
+document.getElementById("msgInput").value="";
+
 }
 </script>
 

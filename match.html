@@ -48,22 +48,28 @@ height:60px;
 }
 
 /* PLAYER */
+
 #playerBox{
 position:relative;
-overflow:hidden;
-height:420px;
+width:100%;
+aspect-ratio:16/9;
 border-radius:10px;
 margin-top:20px;
+background:black;
+overflow:hidden;
 }
 
-#playerBox iframe{
+#playerBox iframe,
+#playerBox video{
 position:absolute;
-top:-120px;
-left:-45%;
-width:200%;
-height:700px;
+top:0;
+left:0;
+width:100%;
+height:100%;
 border:none;
+object-fit:cover;
 }
+
 
 /* servers */
 
@@ -129,6 +135,46 @@ border:none;
 background:#00e5ff;
 cursor:pointer;
 }
+
+
+@media (max-width:600px){
+
+body{
+padding:10px;
+}
+
+.container{
+padding:15px;
+border-radius:15px;
+}
+
+h2{
+font-size:20px;
+}
+
+.teams img{
+width:45px;
+height:45px;
+}
+
+.servers{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.servers button{
+padding:12px;
+font-size:14px;
+}
+
+#messages{
+height:120px;
+font-size:13px;
+}
+
+}
+
 
 </style>
 
@@ -272,7 +318,7 @@ return;
 if(link.includes(".m3u8")){
 
 document.getElementById("playerBox").innerHTML=
-'<video id="video" controls autoplay></video>';
+'<video id="video" controls autoplay playsinline></video>';
 
 let video=document.getElementById("video");
 
@@ -388,11 +434,20 @@ viewersRef.transaction(v=>(v||1)-1);
 /* CHAT */
 
 let chatRef=firebase.database().ref("chat");
-
 chatRef.on("child_added",snap=>{
-let d=snap.val();
-document.getElementById("messages").innerHTML+=
-"<div>"+d+"</div>";
+
+let d = snap.val();
+
+let box = document.getElementById("messages");
+
+/* message add */
+
+box.innerHTML += "<div>"+d+"</div>";
+
+/* auto scroll bottom */
+
+box.scrollTop = box.scrollHeight;
+
 });
 
 function sendMsg(){

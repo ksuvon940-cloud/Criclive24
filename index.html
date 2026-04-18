@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="google" content="notranslate">
 <!-- 🔒 SECURITY -->
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -145,6 +145,7 @@
   justify-content:center;
   z-index:99999;
   animation:splashFade 2.3s forwards;
+transition:0.5s ease;
 }
 
 #appSplash img{
@@ -177,13 +178,18 @@
     visibility:hidden;
   }
 }
+
 body{
-margin:0;
-overflow-x:hidden;
-font-family:'Inter',Arial,sans-serif;
-background:#0b0b0b;
-color:#ffffff;
-padding-bottom:90px;
+  margin:0;
+  overflow-x:hidden;
+  font-family:'Inter',Arial,sans-serif;
+  background:#0b0b0b;
+  color:#ffffff;
+  padding-bottom:90px;
+/* 🔥 COLOR BOOST */
+  /* 🔥 ADD THIS (color sharp fix) */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .breakingWrap{
@@ -537,7 +543,7 @@ background:#0f172a;
 
 .matchCard{
   min-width:260px;
-  background:rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.12);
   border-radius:20px;
   padding:15px;
   backdrop-filter:blur(12px);
@@ -665,7 +671,7 @@ small{
   border-radius:18px;
   margin:12px;
   padding:12px;
-  border:1px solid rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.2);
   box-shadow:0 10px 30px rgba(0,0,0,0.6);
 }
 #pointsTable .tableBox{
@@ -2085,6 +2091,152 @@ right:-10px;
 
 }
 
+/* 🎬 CINEMATIC SPLASH */
+
+#appSplash{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  overflow:hidden;
+  z-index:99999;
+}
+
+/* stadium bg */
+.stadiumBg{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:url("stadium.jpg") center/cover no-repeat;
+  opacity:0;
+  filter:blur(8px) brightness(0.4);
+  animation:fadeStadium 1.5s forwards;
+}
+
+@keyframes fadeStadium{
+  to{opacity:1;}
+}
+
+/* light glow */
+.lightGlow{
+  position:absolute;
+  width:200%;
+  height:200%;
+  top:-50%;
+  left:-50%;
+  background:radial-gradient(circle,rgba(255,0,0,0.25),transparent 60%);
+  animation:moveLight 5s linear infinite;
+}
+
+@keyframes moveLight{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(50%,50%)}
+}
+
+/* 🏏 BALL */
+.ball{
+  position:absolute;
+  width:40px;
+  height:40px;
+  background:white;
+  border-radius:50%;
+  top:50%;
+  left:-80px;
+  transform:translateY(-50%);
+  box-shadow:0 0 15px white;
+
+  animation:ballMove 1.2s ease forwards;
+}
+
+@keyframes ballMove{
+  to{
+    left:50%;
+    transform:translate(-50%,-50%) scale(1.2);
+  }
+}
+
+/* 💥 IMPACT */
+.impact{
+  position:absolute;
+  width:10px;
+  height:10px;
+  background:red;
+  border-radius:50%;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  opacity:0;
+
+  animation:impactBlast 0.6s 1.2s forwards;
+}
+
+@keyframes impactBlast{
+  0%{
+    opacity:1;
+    box-shadow:0 0 10px red;
+  }
+  100%{
+    width:200px;
+    height:200px;
+    opacity:0;
+    box-shadow:0 0 60px red;
+  }
+}
+
+/* 🔥 LOGO */
+.splashContent{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0.5);
+  text-align:center;
+  opacity:0;
+
+  animation:logoReveal 1s 1.4s forwards;
+}
+
+@keyframes logoReveal{
+  to{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1);
+  }
+}
+
+.splashLogo{
+  width:110px;
+  animation:logoGlow 2s infinite alternate;
+}
+
+@keyframes logoGlow{
+  from{filter:drop-shadow(0 0 10px red);}
+  to{filter:drop-shadow(0 0 30px red);}
+}
+
+.tagline{
+  margin-top:10px;
+  font-size:14px;
+  letter-spacing:2px;
+  color:#ff3b3b;
+  text-shadow:0 0 10px red;
+}
+
+/* 📱 MOBILE COLOR FIX */
+@media(max-width:600px){
+
+  .matchCard,
+  .tableBox,
+  .adBox{
+    backdrop-filter:none;
+    background:#111;
+  }
+
+}
+
+/* 🔒 iPhone zoom extra block */
+html, body{
+  touch-action: manipulation;
+}
 
 
 </style>
@@ -2097,9 +2249,26 @@ right:-10px;
 
 <!-- APP SPLASH SCREEN -->
 <div id="appSplash">
-  <img src="logo.png" alt="CricLive24">
-</div>
 
+  <!-- 🎬 Stadium Background -->
+  <div class="stadiumBg"></div>
+
+  <!-- 💡 Light Effect -->
+  <div class="lightGlow"></div>
+
+  <!-- 🏏 Ball -->
+  <div class="ball"></div>
+
+  <!-- 💥 Impact Ring -->
+  <div class="impact"></div>
+
+  <!-- 🔥 Logo -->
+  <div class="splashContent">
+    <img src="logo.png" class="splashLogo">
+    <div class="tagline">LIVE CRICKET UPDATES</div>
+  </div>
+
+</div>
 
 <!-- 🔴 Popunder -->
 <script src="https://pl29011488.profitablecpmratenetwork.com/5f/8d/a1/5f8da1e40cff55ebc7cbbcf60463aa8f.js"></script>
@@ -2108,10 +2277,9 @@ right:-10px;
 <script src="https://pl29021303.profitablecpmratenetwork.com/d1/11/ad/d111ad8933ee4cf77fd5f747a91d3f8f.js"></script>
 
 <div class="header">
-
-<div style="display:flex;align-items:center;gap:8px;">
+<div style="display:flex;align-items:center;gap:4px;">
   <img src="logo.png" style="width:35px;height:35px;" alt="CricLive24 Logo">
-  CricLive24
+  <b>CricLive24</b>
 </div>
 
 <!-- 🔍 SEARCH INSIDE HEADER -->
@@ -3200,16 +3368,29 @@ if("serviceWorker" in navigator){
 </script>
 
 <script>
-window.addEventListener("load",function(){
+window.addEventListener("load", function(){
 
-  setTimeout(()=>{
-    let splash = document.getElementById("appSplash");
-    if(splash){
-      splash.style.display="none";
-    }
-  },2200);
+  let splash = document.getElementById("appSplash");
+  let content = document.querySelector(".splashContent");
+
+  if(content){
+    content.addEventListener("animationend", function(e){
+
+      if(e.animationName === "logoReveal"){
+
+        splash.style.opacity = "0";
+
+        setTimeout(()=>{
+          splash.style.display = "none";
+        },300);
+
+      }
+
+    });
+  }
 
 });
+
 </script>
 
 <!-- 📲 INSTALL APP PRO -->
@@ -3406,4 +3587,4 @@ document.addEventListener("click", (e)=>{
 </script>
 
 </body>
-</html>
+</html>  

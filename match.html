@@ -73,6 +73,23 @@ box-shadow:0 0 30px rgba(255,0,0,0.4);
 border:1px solid rgba(255,0,0,0.3);
 }
 
+#fsBtn{
+position:absolute;
+bottom:10px;
+right:10px;
+z-index:10;
+background:rgba(0,0,0,0.6);
+color:#fff;
+border:none;
+padding:8px 10px;
+border-radius:6px;
+cursor:pointer;
+font-size:16px;
+}
+
+#fsBtn:hover{
+background:rgba(255,0,0,0.8);
+}
 
 #playerBox iframe,
 #playerBox video{
@@ -82,8 +99,10 @@ left:0;
 width:100%;
 height:100%;
 border:none;
-object-fit:cover;
+object-fit:contain; /* 🔥 change this */
+background:#000;
 }
+
 
 
 /* servers */
@@ -233,6 +252,80 @@ font-size:13px;
 }
 
 }
+/* 🔥 FULLSCREEN MODE */
+.fullscreen{
+position:fixed !important;
+top:0;
+left:0;
+width:100vw !important;
+height:100vh !important;
+z-index:999999;
+background:#000;
+border-radius:0 !important;
+}
+
+/* 🔥 BLACK OVERLAY */
+#overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+z-index:999;
+display:none;
+}
+
+/* show করলে */
+#overlay.active{
+display:block;
+}
+
+
+body.fullscreen-mode{
+  overflow:hidden;
+}
+
+.fullscreen{
+  position:fixed !important;
+  top:0;
+  left:0;
+  width:100vw !important;
+  height:100vh !important;
+  z-index:999999;
+  background:#000;
+  border-radius:0 !important;
+}
+
+#overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background:#000;
+  z-index:999998;
+  display:none;
+}
+
+#overlay.active{
+  display:block;
+}
+
+
+/* 🔥 FULLSCREEN PLAYER FIX */
+.fullscreen video,
+.fullscreen iframe{
+  width:100vw !important;
+  height:100vh !important;
+  object-fit:contain;
+  background:#000;
+}
+
+/* 🔥 overlay যেন video block না করে */
+#overlay{
+  pointer-events:none;
+}
 
 
 </style>
@@ -265,7 +358,9 @@ font-size:13px;
 
 <!-- PLAYER -->
 
-<div id="playerBox"></div>
+<div id="playerBox">
+  
+</div>
 
 <div class="servers">
 
@@ -372,11 +467,11 @@ return;
 }
 
 /* M3U8 stream */
-
 if(link.includes(".m3u8")){
 
 document.getElementById("playerBox").innerHTML=
-'<video id="video" controls autoplay playsinline></video>';
+'<video id="video" controls autoplay playsinline></video>' +
+'<button id="fsBtn">⛶</button>';
 
 let video=document.getElementById("video");
 
@@ -391,31 +486,31 @@ video.src=link;
 }
 
 /* iframe stream */
-
 else{
 
 document.getElementById("playerBox").innerHTML=
-'<iframe src="'+link+'" allowfullscreen allow="autoplay; fullscreen"></iframe>';
+'<iframe src="'+link+'" allowfullscreen allow="autoplay; fullscreen"></iframe>' +
+'<button id="fsBtn">⛶</button>';
 
 }
 
 }
 
 /* YOUTUBE */
-
 function playYT(){
 
 document.getElementById("playerBox").innerHTML=
-'<iframe src="'+ytLive+'?autoplay=1" allowfullscreen></iframe>';
+'<iframe src="'+ytLive+'?autoplay=1" allowfullscreen></iframe>' +
+'<button id="fsBtn">⛶</button>';
 
 }
 
 /* FACEBOOK */
-
 function playFB(){
 
 document.getElementById("playerBox").innerHTML=
-'<iframe src="'+fbLive+'" allowfullscreen></iframe>';
+'<iframe src="'+fbLive+'" allowfullscreen></iframe>' +
+'<button id="fsBtn">⛶</button>';
 
 }
 
@@ -540,8 +635,33 @@ document.getElementById("msgInput")
     sendMsg();
   }
 });
+document.addEventListener("click", function(e){
+  if(e.target.id === "fsBtn"){
+
+    let player = document.getElementById("playerBox");
+    let overlay = document.getElementById("overlay");
+
+    player.classList.toggle("fullscreen");
+    
+
+    // 🔥 body scroll বন্ধ
+    document.body.classList.toggle("fullscreen-mode");
+  }
+});
+
+/* 🔥 ESC দিয়ে exit */
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape"){
+
+    document.getElementById("playerBox").classList.remove("fullscreen");
+    document.getElementById("overlay").classList.remove("active");
+    document.body.classList.remove("fullscreen-mode");
+
+  }
+});
+
 
 </script>
-
+<div id="overlay"></div>
 </body>
 </html>

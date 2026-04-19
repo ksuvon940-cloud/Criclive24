@@ -17,20 +17,28 @@
 body{
 margin:0;
 font-family:'Inter',sans-serif;
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+background:linear-gradient(135deg,#000000,#0a0a0a);
 color:white;
 text-align:center;
 padding:20px;
 }
 
 .container{
-max-width:800px;
+max-width:900px;
 margin:auto;
-background:rgba(255,255,255,0.05);
+background:rgba(20,0,0,0.85);
 padding:20px;
 border-radius:20px;
-backdrop-filter:blur(12px);
-box-shadow:0 10px 40px rgba(0,0,0,0.5);
+box-shadow:0 0 25px rgba(255,0,0,0.25);
+border:1px solid rgba(255,0,0,0.2);
+backdrop-filter: blur(10px);
+}
+
+/* 🔥 ADD THIS HERE 👇 */
+h2{
+color:#ff2a2a;
+letter-spacing:1px;
+text-shadow:0 0 12px rgba(255,0,0,0.7);
 }
 
 /* teams */
@@ -45,19 +53,26 @@ margin-top:20px;
 .team img{
 width:60px;
 height:60px;
+border-radius:50%;
+box-shadow:0 0 12px rgba(255,0,0,0.7);
 }
 
-/* PLAYER */
 
+
+
+/* PLAYER */
 #playerBox{
 position:relative;
 width:100%;
 aspect-ratio:16/9;
-border-radius:10px;
+border-radius:14px;
 margin-top:20px;
-background:black;
+background:#000;
 overflow:hidden;
+box-shadow:0 0 30px rgba(255,0,0,0.4);
+border:1px solid rgba(255,0,0,0.3);
 }
+
 
 #playerBox iframe,
 #playerBox video{
@@ -81,19 +96,25 @@ justify-content:center;
 flex-wrap:wrap;
 }
 
+
 .servers button{
-padding:8px 14px;
+padding:10px 16px;
 border:none;
-background:#00e5ff;
-color:#000;
-border-radius:6px;
+background:linear-gradient(45deg,#ff0000,#ff3b3b);
+color:white;
+border-radius:10px;
 cursor:pointer;
 font-weight:bold;
+transition:0.3s;
+box-shadow:0 0 12px rgba(255,0,0,0.5);
 }
 
 .servers button:hover{
-transform:scale(1.05);
+transform:scale(1.08);
+box-shadow:0 0 20px rgba(255,0,0,0.8);
 }
+
+
 
 /* viewer */
 
@@ -106,10 +127,25 @@ font-size:14px;
 
 .chatBox{
 margin-top:20px;
-background:#111;
-padding:10px;
-border-radius:10px;
+background:rgba(10,0,0,0.9);
+padding:15px;
+border-radius:14px;
+border:1px solid rgba(255,0,0,0.25);
+box-shadow:0 0 18px rgba(255,0,0,0.25);
 }
+/* 🔥 ADD THIS EXACTLY HERE 👇 */
+#messages div{
+padding:6px 8px;
+margin-bottom:4px;
+border-radius:6px;
+background:rgba(255,0,0,0.08);
+box-shadow:0 0 6px rgba(255,0,0,0.2);
+}
+
+#messages div:last-child{
+border-bottom:none;
+}
+
 
 #messages{
 height:150px;
@@ -122,20 +158,43 @@ font-size:14px;
 display:flex;
 margin-top:10px;
 }
+.chatInput{
+display:flex;
+margin-top:10px;
+gap:8px;
+}
 
 .chatInput input{
 flex:1;
-padding:8px;
+padding:12px;
 border:none;
+background:#0a0a0a;
+color:white;
+border-radius:8px;
+outline:none;
+box-shadow:inset 0 0 8px rgba(255,0,0,0.2);
+}
+
+.chatInput input:focus{
+box-shadow:0 0 10px rgba(255,0,0,0.5);
 }
 
 .chatInput button{
-padding:8px 15px;
+padding:12px 18px;
 border:none;
-background:#00e5ff;
+background:linear-gradient(45deg,#ff0000,#ff3b3b);
+color:white;
 cursor:pointer;
+border-radius:8px;
+font-weight:bold;
+box-shadow:0 0 10px rgba(255,0,0,0.5);
+transition:0.3s;
 }
 
+.chatInput button:hover{
+transform:scale(1.05);
+box-shadow:0 0 18px rgba(255,0,0,0.8);
+}
 
 @media (max-width:600px){
 
@@ -187,18 +246,17 @@ font-size:13px;
 
 <div class="teams">
 
-<div>
+<div class="team">
 <img id="t1logo">
 <div id="t1"></div>
 </div>
 
 <div>VS</div>
 
-<div>
+<div class="team">
 <img id="t2logo">
 <div id="t2"></div>
 </div>
-
 </div>
 
 <div id="score"></div>
@@ -475,6 +533,14 @@ chatRef.push(msg);
 document.getElementById("msgInput").value="";
 
 }
+// 🔥 ENTER PRESS = SEND MESSAGE
+document.getElementById("msgInput")
+.addEventListener("keypress",function(e){
+  if(e.key === "Enter"){
+    sendMsg();
+  }
+});
+
 </script>
 
 </body>

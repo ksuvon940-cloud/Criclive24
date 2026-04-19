@@ -2239,8 +2239,61 @@ html, body{
 }
 
 
-</style>
-</head>
+.topRow{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logoBox{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.logoBox img{
+  width:30px;
+  height:30px;
+}
+
+.loginBtn{
+  font-size:13px;
+  opacity:0.8;
+}
+
+.mobileNav{
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  margin-top:6px;
+}
+
+.mobileNav span{
+  font-size:13px;
+  padding:6px 8px;
+}
+
+@media(max-width:600px){
+
+  .header{
+    flex-direction:column;
+    align-items:stretch;
+    gap:6px;
+  }
+
+  .searchInline{
+    width:100%;
+  }
+
+  .searchInline input{
+    width:100%;
+  }
+
+}
+
+
+
 
 </style>
 </head>
@@ -2275,28 +2328,33 @@ html, body{
 
 <!-- 🟢 Social Bar -->
 <script src="https://pl29021303.profitablecpmratenetwork.com/d1/11/ad/d111ad8933ee4cf77fd5f747a91d3f8f.js"></script>
-
 <div class="header">
-<div style="display:flex;align-items:center;gap:4px;">
-  <img src="logo.png" style="width:35px;height:35px;" alt="CricLive24 Logo">
-  <b>CricLive24</b>
-</div>
 
-<!-- 🔍 SEARCH INSIDE HEADER -->
-<div class="searchInline">
-  <div class="searchWrapper">
-    <input type="text" id="searchInput" placeholder="Search...">
-    <div id="suggestionsBox"></div>
+  <!-- 🔴 TOP ROW -->
+  <div class="topRow">
+    <div class="logoBox">
+      <img src="logo.png">
+      <b>CricLive24 </b>
+    </div>
+
+    <div class="loginBtn">Login</div>
   </div>
-</div>
-<div class="nav">
-  <span onclick="setActive(this);scrollToSection('hero')">Home</span>
-  <span onclick="scrollToSection('newsList')">News</span>
-  <span onclick="scrollToSection('videoList')">Videos</span>
-  <span onclick="window.location.href='reels.html'">Reels</span>
-</div>
 
-<span style="font-size:13px;opacity:0.8;">Login</span>
+  <!-- 🔍 SEARCH -->
+  <div class="searchInline">
+    <div class="searchWrapper">
+      <input type="text" id="searchInput" placeholder="Search...">
+      <div id="suggestionsBox"></div>
+    </div>
+  </div>
+
+  <!-- 📱 MENU -->
+  <div class="nav mobileNav">
+    <span onclick="scrollToSection('hero')">Home</span>
+    <span onclick="scrollToSection('newsList')">News</span>
+    <span onclick="scrollToSection('videoList')">Video</span>
+    <span onclick="window.location.href='reels.html'">Reels</span>
+  </div>
 
 </div>
 
@@ -2972,7 +3030,6 @@ document.getElementById("bottomAd").innerHTML =
 `<a href="${d.link}"><img src="${d.image}" width="100%"></a>`;
 }
 });
-
 function showNextMatchCountdown(list){
 
   let upcoming = list.filter(m => m.status === "Upcoming");
@@ -2983,42 +3040,53 @@ function showNextMatchCountdown(list){
   }
 
   upcoming.sort((a,b)=>{
-    return new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time);
+    return new Date(a.matchTime || (a.date + " " + a.time)) - 
+           new Date(b.matchTime || (b.date + " " + b.time));
   });
 
   let next = upcoming[0];
 
   function updateCountdown(){
-let matchTime;
 
-if(next.matchTime){
-  matchTime = parseInt(next.matchTime);
-}else{
-  matchTime = new Date(next.date + " " + next.time).getTime();
-}
-    
-    let now = new Date().getTime();
+    // 🔥 SAFE TIME (works everywhere)
+    let matchTime = next.matchTime 
+      ? parseInt(next.matchTime)
+      : new Date(next.date + " " + next.time).getTime();
 
+    let now = Date.now();
     let diff = matchTime - now;
 
-    if(diff <= 0){
-      document.getElementById("countdownBox").innerHTML = "Match starting now 🔴";
+    if(isNaN(diff)){
+      document.getElementById("countdownBox").innerHTML = "⏳ Time not available";
       return;
     }
 
-    let h = Math.floor(diff / (1000*60*60));
+    if(diff <= 0){
+      document.getElementById("countdownBox").innerHTML = "🔴 Match starting now";
+      return;
+    }
+
+    let d = Math.floor(diff / (1000*60*60*24));
+    let h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
     let m = Math.floor((diff % (1000*60*60)) / (1000*60));
     let s = Math.floor((diff % (1000*60)) / 1000);
-document.getElementById("countdownBox").innerHTML =
-  `⏳ Next Match: ${next.team1} vs ${next.team2} in 
-   <span class="countdownTime">${h}h ${m}m ${s}s</span>`;
-    
+
+    document.getElementById("countdownBox").innerHTML =
+    `⏳ ${next.team1} vs ${next.team2}<br>
+     <span class="countdownTime">
+     ${d}d ${h}h ${m}m ${s}s
+     </span>`;
   }
 
   updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
 
+  // 🔥 IMPORTANT: duplicate interval avoid
+  if(window.countdownTimer){
+    clearInterval(window.countdownTimer);
+  }
+
+  window.countdownTimer = setInterval(updateCountdown, 1000);
+}
 
 async function loadAPIMatches(){
 
@@ -3154,9 +3222,6 @@ window.onclick = function(e){
     closeVideo();
   }
 }
-
-loadAPIMatches();
-setInterval(loadAPIMatches, 600000); // 10 min
 
 
 

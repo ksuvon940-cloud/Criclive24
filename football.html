@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Football Live | CricLive24</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+
+body{
+margin:0;
+background:#0b0b0b;
+font-family:Inter,sans-serif;
+color:#fff;
+}
+
+.header{
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:700;
+background:#111;
+border-bottom:1px solid #222;
+}
+
+.playerWrap{
+position:relative;
+max-width:1100px;
+margin:auto;
+padding:15px;
+}
+
+video{
+width:100%;
+border-radius:12px;
+background:#000;
+}
+
+.liveBadge{
+position:absolute;
+top:25px;
+left:25px;
+background:red;
+padding:6px 12px;
+border-radius:20px;
+font-size:13px;
+font-weight:bold;
+z-index:99;
+}
+
+.scoreBoard{
+margin-top:15px;
+background:#151515;
+padding:15px;
+border-radius:12px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.team{
+text-align:center;
+width:35%;
+}
+
+.team img{
+width:60px;
+height:60px;
+border-radius:50%;
+}
+
+.teamName{
+font-size:18px;
+font-weight:700;
+margin-top:5px;
+}
+
+.teamScore{
+font-size:28px;
+font-weight:800;
+color:#00ff7f;
+}
+
+.matchCenter{
+text-align:center;
+width:30%;
+}
+
+.matchTime{
+font-size:24px;
+font-weight:bold;
+color:#ffcc00;
+}
+
+.fullBtn{
+margin-top:10px;
+width:100%;
+padding:12px;
+background:#009270;
+border:none;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.chatBox{
+max-width:1100px;
+margin:20px auto;
+padding:15px;
+}
+
+.chatMessages{
+height:300px;
+overflow-y:auto;
+background:#151515;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.chatItem{
+padding:8px;
+margin-bottom:6px;
+background:#222;
+border-radius:6px;
+}
+
+.chatInput{
+display:flex;
+gap:10px;
+}
+
+.chatInput input{
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+}
+
+.chatInput button{
+padding:12px 20px;
+background:#009270;
+border:none;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+⚽ FOOTBALL LIVE
+</div>
+
+<div class="playerWrap">
+
+<div class="liveBadge">
+🔴 LIVE
+</div>
+
+<video id="video" controls autoplay playsinline></video>
+
+<button class="fullBtn" onclick="openFullscreen()">
+⛶ Fullscreen
+</button>
+
+<div class="scoreBoard">
+
+<div class="team">
+<img id="team1Logo" src="team1.png">
+<div class="teamName" id="team1Name">
+Barcelona
+</div>
+<div class="teamScore" id="team1Score">
+2
+</div>
+</div>
+
+<div class="matchCenter">
+<div class="matchTime" id="matchMinute">
+75'
+</div>
+<div>VS</div>
+</div>
+
+<div class="team">
+<img id="team2Logo" src="team2.png">
+<div class="teamName" id="team2Name">
+Real Madrid
+</div>
+<div class="teamScore" id="team2Score">
+1
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="chatBox">
+
+<h2>💬 Live Chat</h2>
+
+<div class="chatMessages" id="messages"></div>
+
+<div class="chatInput">
+<input id="msg" placeholder="Write message...">
+<button onclick="sendMessage()">
+Send
+</button>
+</div>
+
+</div>
+
+<script>
+
+/* ===== FIREBASE CONFIG ===== */
+
+const firebaseConfig = {
+
+apiKey:"YOUR_API_KEY",
+
+authDomain:"YOUR_PROJECT.firebaseapp.com",
+
+databaseURL:"YOUR_DB_URL",
+
+projectId:"YOUR_PROJECT",
+
+storageBucket:"",
+
+messagingSenderId:"",
+
+appId:""
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+/* ===== LIVE STREAM ===== */
+
+const video = document.getElementById("video");
+
+/* M3U8 LINK */
+const streamUrl = "YOUR_STREAM_URL.m3u8";
+
+if(Hls.isSupported()){
+
+const hls = new Hls();
+
+hls.loadSource(streamUrl);
+
+hls.attachMedia(video);
+
+}else{
+
+video.src = streamUrl;
+
+}
+
+/* ===== FULLSCREEN ===== */
+
+function openFullscreen(){
+
+const player = document.getElementById("video");
+
+if(player.requestFullscreen){
+
+player.requestFullscreen();
+
+}
+
+}
+
+/* ===== CHAT ===== */
+
+function sendMessage(){
+
+const text = document.getElementById("msg").value;
+
+if(!text) return;
+
+db.ref("footballChat").push({
+
+msg:text,
+
+time:Date.now()
+
+});
+
+document.getElementById("msg").value="";
+
+}
+
+db.ref("footballChat").on("child_added",(snap)=>{
+
+const data = snap.val();
+
+const div = document.createElement("div");
+
+div.className="chatItem";
+
+div.innerText=data.msg;
+
+document.getElementById("messages").appendChild(div);
+
+});
+
+/* ===== LIVE SCORE UPDATE ===== */
+
+db.ref("footballScore").on("value",(snap)=>{
+
+const d=snap.val();
+
+if(!d) return;
+
+team1Name.innerText=d.team1;
+
+team2Name.innerText=d.team2;
+
+team1Score.innerText=d.score1;
+
+team2Score.innerText=d.score2;
+
+matchMinute.innerText=d.minute;
+
+team1Logo.src=d.logo1;
+
+team2Logo.src=d.logo2;
+
+});
+
+</script>
+
+</body>
+</html>
